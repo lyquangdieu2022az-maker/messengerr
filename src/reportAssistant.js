@@ -15,7 +15,7 @@ const REPORT_TYPES = {
       {
         key: "realLink",
         label: "Link thật",
-        prompt: "Gửi link tài khoản/Page thật của bạn hoặc người bị giả mạo."
+        prompt: "Gửi link tài khoản/Page thật của Anh/Chị hoặc người bị giả mạo."
       },
       {
         key: "victim",
@@ -25,7 +25,7 @@ const REPORT_TYPES = {
       {
         key: "harm",
         label: "Hành vi gây hại",
-        prompt: "Họ đã làm gì gây nhầm lẫn hoặc gây hại? Ví dụ: nhắn tin lừa đảo, đăng bài giả, dùng ảnh/tên của bạn."
+        prompt: "Họ đã làm gì gây nhầm lẫn hoặc gây hại? Ví dụ: nhắn tin lừa đảo, đăng bài giả, dùng ảnh/tên của Anh/Chị."
       }
     ]
   },
@@ -41,7 +41,7 @@ const REPORT_TYPES = {
       {
         key: "canLogin",
         label: "Còn đăng nhập được không",
-        prompt: "Bạn còn đăng nhập được Facebook ở thiết bị nào không?"
+        prompt: "Anh/Chị còn đăng nhập được Facebook ở thiết bị nào không?"
       },
       {
         key: "changedInfo",
@@ -51,12 +51,12 @@ const REPORT_TYPES = {
       {
         key: "lastAccess",
         label: "Thời điểm mất quyền",
-        prompt: "Bạn bắt đầu mất quyền truy cập từ khi nào?"
+        prompt: "Anh/Chị bắt đầu mất quyền truy cập từ khi nào?"
       },
       {
         key: "evidence",
         label: "Bằng chứng/thông báo",
-        prompt: "Facebook đang hiện thông báo gì? Nếu có ảnh chụp, bạn có thể gửi mô tả hoặc ảnh."
+        prompt: "Facebook đang hiện thông báo gì? Nếu có ảnh chụp, Anh/Chị có thể gửi mô tả hoặc ảnh."
       }
     ]
   },
@@ -77,7 +77,7 @@ const REPORT_TYPES = {
       {
         key: "accountLink",
         label: "Link tài khoản",
-        prompt: "Nếu có link tài khoản của bạn, gửi vào đây. Nếu không có, bấm Bỏ qua."
+        prompt: "Nếu có link tài khoản của Anh/Chị, gửi vào đây. Nếu không có, bấm Bỏ qua."
       },
       {
         key: "canVerify",
@@ -87,7 +87,7 @@ const REPORT_TYPES = {
       {
         key: "context",
         label: "Bối cảnh trước khi bị khóa",
-        prompt: "Trước khi bị khóa bạn có đăng nhập thiết bị lạ, đổi thông tin, chạy quảng cáo, đổi tên hoặc bị báo cáo gì không?"
+        prompt: "Trước khi bị khóa Anh/Chị có đăng nhập thiết bị lạ, đổi thông tin, chạy quảng cáo, đổi tên hoặc bị báo cáo gì không?"
       }
     ]
   },
@@ -108,17 +108,17 @@ const REPORT_TYPES = {
       {
         key: "oldRole",
         label: "Quyền trước đây",
-        prompt: "Trước đây bạn có quyền gì trên Page? Ví dụ: admin, full control, editor, chủ Business."
+        prompt: "Trước đây Anh/Chị có quyền gì trên Page? Ví dụ: admin, full control, editor, chủ Business."
       },
       {
         key: "whenLost",
         label: "Thời điểm mất quyền",
-        prompt: "Bạn mất quyền từ lúc nào? Có nhận email/thông báo thay đổi quyền không?"
+        prompt: "Anh/Chị mất quyền từ lúc nào? Có nhận email/thông báo thay đổi quyền không?"
       },
       {
         key: "evidence",
         label: "Bằng chứng sở hữu",
-        prompt: "Bạn có bằng chứng gì: email cũ, Business ID, ảnh thông báo, giấy tờ thương hiệu, lịch sử quản trị?"
+        prompt: "Anh/Chị có bằng chứng gì: email cũ, Business ID, ảnh thông báo, giấy tờ thương hiệu, lịch sử quản trị?"
       }
     ]
   },
@@ -143,8 +143,8 @@ const REPORT_TYPES = {
       },
       {
         key: "actionTaken",
-        label: "Bạn đã làm gì",
-        prompt: "Bạn đã bấm link, đăng nhập, tải file hoặc gửi thông tin gì chưa?"
+        label: "Anh/Chị đã làm gì",
+        prompt: "Anh/Chị đã bấm link, đăng nhập, tải file hoặc gửi thông tin gì chưa?"
       },
       {
         key: "impact",
@@ -175,12 +175,12 @@ const REPORT_TYPES = {
       {
         key: "impact",
         label: "Ảnh hưởng",
-        prompt: "Nội dung đó ảnh hưởng đến bạn/người khác như thế nào?"
+        prompt: "Nội dung đó ảnh hưởng đến Anh/Chị/người khác như thế nào?"
       },
       {
         key: "evidence",
         label: "Bằng chứng",
-        prompt: "Bạn có ảnh chụp, thời gian xảy ra, tên người liên quan hoặc bằng chứng nào khác không?"
+        prompt: "Anh/Chị có ảnh chụp, thời gian xảy ra, tên người liên quan hoặc bằng chứng nào khác không?"
       }
     ]
   },
@@ -205,13 +205,13 @@ const REPORT_TYPES = {
       },
       {
         key: "changes",
-        label: "Bạn đã chỉnh sửa gì",
-        prompt: "Bạn đã sửa nội dung, landing page, thanh toán hoặc xác minh danh tính chưa?"
+        label: "Anh/Chị đã chỉnh sửa gì",
+        prompt: "Anh/Chị đã sửa nội dung, landing page, thanh toán hoặc xác minh danh tính chưa?"
       },
       {
         key: "businessImpact",
         label: "Ảnh hưởng kinh doanh",
-        prompt: "Việc này ảnh hưởng đến hoạt động kinh doanh/quảng cáo của bạn ra sao?"
+        prompt: "Việc này ảnh hưởng đến hoạt động kinh doanh/quảng cáo của Anh/Chị ra sao?"
       }
     ]
   }
@@ -272,11 +272,11 @@ export function createReportDraft(type) {
 
 export function buildReportMenu() {
   return [
-    "Mình có thể tạo hồ sơ báo cáo/kháng nghị bán tự động cho bạn.",
+    "Em có thể tạo hồ sơ báo cáo/kháng nghị bán tự động cho Anh/Chị.",
     "",
-    "Bạn chọn loại vấn đề bên dưới. Mình sẽ hỏi từng thông tin cần thiết, sau đó soạn sẵn nội dung để bạn dán vào form chính thức của Meta.",
+    "Anh/Chị chọn loại vấn đề bên dưới. Em sẽ hỏi từng thông tin cần thiết, sau đó soạn sẵn nội dung để Anh/Chị dán vào form chính thức của Meta.",
     "",
-    "Lưu ý: bot không tự bấm gửi thay bạn, vì Meta không mở API công khai cho việc đó. Bạn là người bấm gửi trên trang chính thức."
+    "Lưu ý: bot không tự bấm gửi thay Anh/Chị, vì Meta không mở API công khai cho việc đó. Anh/Chị là người bấm gửi trên trang chính thức."
   ].join("\n");
 }
 
@@ -295,7 +295,7 @@ export function buildDraftStartReply(draft) {
   const field = config.fields[draft.step];
 
   return [
-    `Ok, mình sẽ tạo hồ sơ: ${config.title}.`,
+    `Ok, em sẽ tạo hồ sơ: ${config.title}.`,
     "",
     `Câu ${draft.step + 1}/${config.fields.length}: ${field.prompt}`
   ].join("\n");
@@ -347,21 +347,21 @@ export function buildReportFinal(draft) {
   return {
     title: config.title,
     text: [
-      `Mình đã soạn xong hồ sơ: ${config.title}.`,
+      `Em đã soạn xong hồ sơ: ${config.title}.`,
       "",
       "Thông tin đã thu thập:",
       details,
       "",
-      "Nội dung đề xuất để bạn dán vào form chính thức:",
+      "Nội dung đề xuất để Anh/Chị dán vào form chính thức:",
       "",
       reportBody,
       "",
       "Cách gửi:",
-      "1. Bấm link chính thức mình gửi bên dưới.",
+      "1. Bấm link chính thức em gửi bên dưới.",
       "2. Dán nội dung báo cáo/kháng nghị.",
       "3. Chỉ gửi giấy tờ hoặc thông tin nhạy cảm trực tiếp trên trang chính thức của Facebook/Meta, không gửi vào chat bot.",
       "",
-      "Nếu bạn muốn mình chỉnh giọng văn, nhắn: sửa báo cáo + phần bạn muốn đổi."
+      "Nếu Anh/Chị muốn em chỉnh giọng văn, nhắn: sửa báo cáo + phần Anh/Chị muốn đổi."
     ].join("\n"),
     buttonsText: "Mở link chính thức để gửi:",
     buttons: config.officialLinks.map((link) => ({
@@ -373,7 +373,7 @@ export function buildReportFinal(draft) {
 }
 
 export function buildReportCancelReply() {
-  return "Mình đã hủy hồ sơ báo cáo đang tạo. Khi cần làm lại, bạn nhắn: báo cáo.";
+  return "Em đã hủy hồ sơ báo cáo đang tạo. Khi cần làm lại, Anh/Chị nhắn: báo cáo.";
 }
 
 function buildReportBody(draft) {

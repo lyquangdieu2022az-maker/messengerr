@@ -6,6 +6,7 @@ import express from "express";
 import { AiClient } from "./openaiClient.js";
 import { FacebookClient } from "./facebookClient.js";
 import { getFacebookFlowReply, mainHelp } from "./facebookFlows.js";
+import { MENU_PAYLOADS, setupMessengerProfile } from "./messengerProfile.js";
 import { MemoryStore } from "./memoryStore.js";
 import { ReportStore } from "./reportStore.js";
 import {
@@ -39,6 +40,7 @@ const config = {
   graphVersion: process.env.GRAPH_API_VERSION || "v25.0",
   publicBaseUrl: process.env.PUBLIC_BASE_URL,
   voiceRepliesDefault: process.env.VOICE_REPLIES_DEFAULT === "true",
+  setupMessengerProfileOnStart: process.env.SETUP_MESSENGER_PROFILE_ON_START !== "false",
   botName: process.env.BOT_NAME || "Tro Ly Facebook AI"
 };
 
@@ -209,20 +211,20 @@ async function answerWithFallback({ text, memory }) {
   } catch (error) {
     console.error("AI answer failed:", error);
     const topicLine = memory.lastSupportTopic
-      ? `Mình vẫn nhận được tin của bạn. Ngữ cảnh gần nhất mình đang giữ là: ${memory.lastSupportTopic}`
-      : "Mình vẫn nhận được tin nhắn của bạn.";
+      ? `Em vẫn nhận được tin của Anh/Chị. Ngữ cảnh gần nhất em đang giữ là: ${memory.lastSupportTopic}`
+      : "Em vẫn nhận được tin nhắn của Anh/Chị.";
 
     return [
       topicLine,
       "",
-      "Phần AI đang gặp lỗi tạm thời nên mình chưa phân tích sâu được ngay, nhưng mình không bỏ qua tin nhắn của bạn.",
+      "Phần AI đang gặp lỗi tạm thời nên em chưa phân tích sâu được ngay, nhưng em không bỏ qua tin nhắn của Anh/Chị.",
       "",
-      "Bạn có thể nhắn lại theo kiểu ngắn gọn hơn để mình xử lý tiếp:",
-      "1. Bạn muốn mình tư vấn, hướng dẫn, soạn nội dung, nghĩ ý tưởng hay trò chuyện?",
+      "Anh/Chị có thể nhắn lại theo kiểu ngắn gọn hơn để em xử lý tiếp:",
+      "1. Anh/Chị muốn em tư vấn, hướng dẫn, soạn nội dung, nghĩ ý tưởng hay trò chuyện?",
       "2. Nếu là Facebook/Meta, lỗi đang nằm ở tài khoản, Page, Messenger, Business hay quảng cáo?",
-      "3. Nếu là chuyện khác như nấu ăn, vui chơi, học tập, bạn muốn kết quả theo kiểu nhanh gọn hay chi tiết?",
+      "3. Nếu là chuyện khác như nấu ăn, vui chơi, học tập, Anh/Chị muốn kết quả theo kiểu nhanh gọn hay chi tiết?",
       "",
-      `Tin nhắn mình vừa nhận: ${text}`,
+      `Tin nhắn em vừa nhận: ${text}`,
       "",
       "Nếu đây là vấn đề khẩn cấp về bảo mật Facebook, hãy đổi mật khẩu, bật xác thực 2 yếu tố và kiểm tra thiết bị đăng nhập lạ ngay."
     ].join("\n");
@@ -279,6 +281,9 @@ async function handleLocalCommand(psid, rawText) {
   const text = rawText.trim();
   const normalized = normalizeCommand(text);
 
+  const menuHandled = await handleMenuPayload(psid, text);
+  if (menuHandled) return true;
+
   if (["help", "tro giup", "bat dau"].includes(normalized)) {
     await facebook.sendText(psid, mainHelp(config.botName));
     return true;
@@ -289,12 +294,7 @@ async function handleLocalCommand(psid, rawText) {
 
   const flowReply = getFacebookFlowReply(normalized);
   if (flowReply) {
-    await memoryStore.updateUser(psid, (memory) => ({
-      ...memory,
-      lastSupportTopic: text
-    }));
-    await memoryStore.appendTurn(psid, text, flowReply);
-    await facebook.sendText(psid, flowReply);
+    await sendFlowReply(psid, text, flowReply);
     return true;
   }
 
@@ -302,14 +302,14 @@ async function handleLocalCommand(psid, rawText) {
     const fact = text.split(/\s+/).slice(2).join(" ").trim();
     if (fact) {
       await memoryStore.addFact(psid, fact);
-      await facebook.sendText(psid, "Mình đã ghi nhớ thông tin này cho những lần trả lời sau.");
+      await facebook.sendText(psid, "Em đã ghi nhớ thông tin này cho những lần trả lời sau.");
     }
     return true;
   }
 
   if (["quen toi", "xoa ghi nho"].includes(normalized)) {
     await memoryStore.forgetUser(psid);
-    await facebook.sendText(psid, "Mình đã xóa ghi nhớ hội thoại của bạn trên bot này.");
+    await facebook.sendText(psid, "Em đã xóa ghi nhớ hội thoại của Anh/Chị trên bot này.");
     return true;
   }
 
@@ -318,8 +318,8 @@ async function handleLocalCommand(psid, rawText) {
     await facebook.sendText(
       psid,
       config.publicBaseUrl
-        ? "Đã bật trả lời bằng giọng nói AI. Mình vẫn gửi kèm văn bản để bạn dễ xem lại."
-        : "Mình đã bật tùy chọn giọng nói, nhưng bạn cần cấu hình PUBLIC_BASE_URL để Facebook tải được file audio."
+        ? "Đã bật trả lời bằng giọng nói AI. Em vẫn gửi kèm văn bản để Anh/Chị dễ xem lại."
+        : "Em đã bật tùy chọn giọng nói, nhưng Anh/Chị cần cấu hình PUBLIC_BASE_URL để Facebook tải được file audio."
     );
     return true;
   }
@@ -331,6 +331,50 @@ async function handleLocalCommand(psid, rawText) {
   }
 
   return false;
+}
+
+async function handleMenuPayload(psid, payload) {
+  if (payload === MENU_PAYLOADS.help) {
+    await facebook.sendText(psid, mainHelp(config.botName));
+    return true;
+  }
+
+  if (payload === MENU_PAYLOADS.askAi) {
+    const reply = [
+      "Anh/Chị cứ nhắn câu hỏi trực tiếp cho em nhé.",
+      "",
+      "Em có thể trả lời về Facebook/Meta, tạo báo cáo, nấu ăn, học tập, viết nội dung, ý tưởng kinh doanh hoặc trò chuyện bình thường."
+    ].join("\n");
+
+    await sendFlowReply(psid, "Người dùng bấm menu Hỏi AI", reply);
+    return true;
+  }
+
+  const flowByPayload = {
+    [MENU_PAYLOADS.lockedAccount]: "tai khoan bi khoa",
+    [MENU_PAYLOADS.hackedAccount]: "tai khoan bi hack",
+    [MENU_PAYLOADS.pageAccess]: "bi mat quyen page",
+    [MENU_PAYLOADS.loginAlert]: "thiet bi la dang nhap",
+    [MENU_PAYLOADS.scam]: "lua dao phishing"
+  };
+
+  const flowText = flowByPayload[payload];
+  if (!flowText) return false;
+
+  const flowReply = getFacebookFlowReply(flowText);
+  if (!flowReply) return false;
+
+  await sendFlowReply(psid, flowText, flowReply);
+  return true;
+}
+
+async function sendFlowReply(psid, text, reply) {
+  await memoryStore.updateUser(psid, (memory) => ({
+    ...memory,
+    lastSupportTopic: text
+  }));
+  await memoryStore.appendTurn(psid, text, reply);
+  await facebook.sendText(psid, reply);
 }
 
 async function handleReportAssistantCommand(psid, text, normalized) {
@@ -438,10 +482,27 @@ function normalizeCommand(text) {
 memoryStore.init().then(() => {
   return reportStore.init();
 }).then(() => {
+  return maybeSetupMessengerProfile();
+}).then(() => {
   app.listen(config.port, () => {
     console.log(`${config.botName} is running on http://localhost:${config.port}`);
   });
 });
+
+async function maybeSetupMessengerProfile() {
+  if (!config.setupMessengerProfileOnStart) return;
+
+  try {
+    const result = await setupMessengerProfile({
+      pageAccessToken: config.pageAccessToken,
+      graphVersion: config.graphVersion,
+      botName: config.botName
+    });
+    console.log("Messenger profile configured:", result);
+  } catch (error) {
+    console.error("Messenger profile setup failed:", error);
+  }
+}
 
 async function buildFinalReportButtons(finalReport) {
   const buttons = [...(finalReport.buttons || [])];
@@ -494,7 +555,7 @@ function renderReportPage(report) {
   <main>
     <h1>${escapeHtml(report.title || "Bản soạn báo cáo")}</h1>
     <div class="note">
-      Nội dung đã được bot soạn sẵn. Bạn bấm Sao chép, mở link chính thức của Meta/Facebook, rồi dán vào ô mô tả trong form.
+      Nội dung đã được bot soạn sẵn. Anh/Chị bấm Sao chép, mở link chính thức của Meta/Facebook, rồi dán vào ô mô tả trong form.
       Không gửi mật khẩu, mã 2FA, token, cookie hoặc giấy tờ nhạy cảm cho bot.
     </div>
     <textarea id="reportText">${escapeHtml(report.text || "")}</textarea>

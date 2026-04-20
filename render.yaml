@@ -34,6 +34,8 @@ services:
         value: Tro Ly Facebook AI
       - key: VOICE_REPLIES_DEFAULT
         value: "false"
+      - key: SETUP_MESSENGER_PROFILE_ON_START
+        value: "true"
       - key: AI_REPLY_TIMEOUT_MS
         value: "30000"
       - key: MAX_HISTORY_MESSAGES

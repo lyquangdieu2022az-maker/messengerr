@@ -45,7 +45,7 @@ export class AiClient {
 
     const response = await this.createResponseWithFallback(input, this.reasoningEffort);
 
-    return response.output_text?.trim() || "Mình chưa tạo được câu trả lời. Bạn gửi lại giúp mình nhé.";
+    return response.output_text?.trim() || "Em chưa tạo được câu trả lời. Anh/Chị gửi lại giúp em nhé.";
   }
 
   async summarizeMemory({ memory, userText, assistantText }) {
@@ -143,7 +143,7 @@ export class AiClient {
     ];
 
     const responseText = await this.generateGeminiText(contents);
-    return responseText || "Mình chưa tạo được câu trả lời. Bạn gửi lại giúp mình nhé.";
+    return responseText || "Em chưa tạo được câu trả lời. Anh/Chị gửi lại giúp em nhé.";
   }
 
   async generateGeminiText(contents) {

@@ -9,6 +9,8 @@ Bot Messenger dung OpenAI de tra loi co logic, nho ngu canh theo tung nguoi dung
 - Tro chuyen da nang: hoi Facebook thi xu ly chuyen sau, hoi chuyen khac thi tra loi dung chu de.
 - Tro ly tao bao cao/khang nghi ban tu dong: hoi tung thong tin, soan san noi dung, gui link chinh thuc de nguoi dung tu bam gui.
 - Tao trang ban soan tren Render co nut copy noi dung va nut mo link chinh thuc cua Meta/Facebook.
+- Tu cai menu co dinh trong Messenger: Hoi AI, Ho tro Facebook, Tao bao cao, Tro giup.
+- Giong tra loi lich su: bot xung em va goi nguoi can ho tro la Anh/Chi.
 - Bo nho hoi thoai theo PSID trong `data/memory.json`.
 - Lenh luu/xoa ghi nho: `nho rang ...`, `quen toi`.
 - Nhan audio tu Messenger, chuyen thanh text bang `gpt-4o-mini-transcribe`.
@@ -33,6 +35,7 @@ Dien cac bien trong `.env`:
 - `APP_SECRET`: App Secret cua Meta app, nen bat khi chay that.
 - `PUBLIC_BASE_URL`: URL HTTPS cong khai tro vao server, vi du URL ngrok.
 - `REPORT_FILE_PATH`: tuy chon, noi luu cac ban soan bao cao tam thoi. De trong thi dung `data/reports.json`.
+- `SETUP_MESSENGER_PROFILE_ON_START`: de `true` de bot tu cai nut menu co dinh Messenger khi deploy.
 
 ## Chay local
 
@@ -85,6 +88,23 @@ Verify token trong Meta phai trung `VERIFY_TOKEN`.
 - `quen toi`: xoa ghi nho.
 - `bat giong noi`: gui them file audio AI sau cau tra loi.
 - `tat giong noi`: tat audio.
+
+## Menu co dinh Messenger
+
+Sau khi deploy, bot se tu cai menu co dinh neu co:
+
+```env
+SETUP_MESSENGER_PROFILE_ON_START=true
+PAGE_ACCESS_TOKEN=token_page_cua_ban
+```
+
+Menu gom:
+
+- Hoi AI
+- Ho tro Facebook: tai khoan bi khoa, bi hack, mat Page, thiet bi la, lua dao/phishing
+- Cong cu: tao bao cao, tro giup
+
+Tin nhan binh thuong van hoat dong nhu cu. Menu chi la nut bam nhanh cho nguoi dung.
 
 ## Luu y an toan
 

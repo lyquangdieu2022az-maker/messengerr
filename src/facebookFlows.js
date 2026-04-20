@@ -87,9 +87,9 @@ export function getFacebookFlowReply(normalizedText) {
 
 export function mainHelp(botName) {
   return [
-    `Mình là ${botName}, trợ lý AI hỗ trợ sự cố Facebook/Meta.`,
+    `Em là ${botName}, trợ lý AI hỗ trợ sự cố Facebook/Meta.`,
     "",
-    "Bạn có thể nhắn trực tiếp vấn đề, ví dụ:",
+    "Anh/Chị có thể nhắn trực tiếp vấn đề, ví dụ:",
     "- bị giả mạo tài khoản",
     "- có thiết bị lạ đăng nhập",
     "- không nhận mã 2FA",
@@ -107,16 +107,16 @@ export function mainHelp(botName) {
     "- danh sách tác vụ: xem toàn bộ nhóm hỗ trợ",
     "- báo cáo: tạo hồ sơ báo cáo/kháng nghị bán tự động",
     "- nhớ rằng <thông tin>: lưu ghi nhớ cho lần sau",
-    "- quên tôi: xóa ghi nhớ của bạn",
+    "- quên tôi: xóa ghi nhớ của Anh/Chị",
     "- bật giọng nói / tắt giọng nói: bật hoặc tắt audio trả lời",
     "",
-    "Lưu ý: mình có thể hướng dẫn, soạn nội dung báo cáo, đưa link chính thức và checklist xử lý. Mình không thể đăng nhập tài khoản của bạn, không xin mật khẩu/mã 2FA/token, và không thể tự gửi báo cáo thay bạn nếu Meta không cung cấp API chính thức."
+    "Lưu ý: em có thể hướng dẫn, soạn nội dung báo cáo, đưa link chính thức và checklist xử lý. Em không thể đăng nhập tài khoản của Anh/Chị, không xin mật khẩu/mã 2FA/token, và không thể tự gửi báo cáo thay Anh/Chị nếu Meta không cung cấp API chính thức."
   ].join("\n");
 }
 
 function taskMenu() {
   return [
-    "Các nhóm tác vụ Facebook mình có thể hỗ trợ:",
+    "Các nhóm tác vụ Facebook em có thể hỗ trợ:",
     "",
     "1. Bảo mật tài khoản: thiết bị lạ, đổi mật khẩu, 2FA, mã đăng nhập, tài khoản bị hack.",
     "2. Page/Fanpage: mất quyền admin, Page bị hack, đổi tên Page, Page bị hạn chế, chất lượng Page.",
@@ -127,18 +127,18 @@ function taskMenu() {
     "7. Kiếm tiền: Stars, Reels, monetization, nội dung không đủ điều kiện.",
     "8. Soạn nội dung: báo cáo, kháng nghị, mô tả lỗi, tin nhắn trả khách, FAQ Page.",
     "",
-    "Bạn chỉ cần nhắn kiểu: “quảng cáo bị từ chối”, “page bị hạn chế”, “không nhận mã 2FA”, mình sẽ đi theo luồng phù hợp.",
+    "Anh/Chị chỉ cần nhắn kiểu: “quảng cáo bị từ chối”, “page bị hạn chế”, “không nhận mã 2FA”, em sẽ đi theo luồng phù hợp.",
     "Muốn tạo hồ sơ báo cáo có hỏi từng bước, nhắn: báo cáo."
   ].join("\n");
 }
 
 function impersonationFlow() {
   return [
-    "Mình xử lý theo luồng báo cáo giả mạo nhé.",
+    "Em xử lý theo luồng báo cáo giả mạo nhé.",
     "",
-    "1. Bạn chuẩn bị:",
+    "1. Anh/Chị chuẩn bị:",
     "- Link tài khoản/Page giả mạo.",
-    "- Link tài khoản/Page thật của bạn hoặc người bị giả mạo.",
+    "- Link tài khoản/Page thật của Anh/Chị hoặc người bị giả mạo.",
     "- Ảnh chụp màn hình tên, ảnh đại diện, bài viết/tin nhắn giả mạo nếu có.",
     "- Mô tả ngắn: họ đang giả mạo ai, gây hại như thế nào.",
     "",
@@ -151,7 +151,7 @@ function impersonationFlow() {
     "3. Mẫu nội dung báo cáo:",
     "Tài khoản/Page này đang giả mạo tôi hoặc thương hiệu của tôi. Họ sử dụng tên, hình ảnh hoặc nội dung gây nhầm lẫn để liên hệ người khác. Vui lòng xem xét và xử lý tài khoản/Page giả mạo này.",
     "",
-    "Gửi mình link tài khoản/Page giả mạo, mình sẽ giúp bạn viết bản báo cáo rõ hơn. Bạn là người bấm gửi báo cáo trên trang chính thức của Meta."
+    "Gửi em link tài khoản/Page giả mạo, em sẽ giúp Anh/Chị viết bản báo cáo rõ hơn. Anh/Chị là người bấm gửi báo cáo trên trang chính thức của Meta."
   ].join("\n");
 }
 
@@ -159,7 +159,7 @@ function twoFactorFlow() {
   return [
     "Luồng xử lý khi không nhận được mã đăng nhập/2FA:",
     "",
-    "1. Kiểm tra bạn còn đăng nhập Facebook ở thiết bị nào không. Nếu còn, vào Cài đặt > Mật khẩu và bảo mật > Xác thực 2 yếu tố.",
+    "1. Kiểm tra Anh/Chị còn đăng nhập Facebook ở thiết bị nào không. Nếu còn, vào Cài đặt > Mật khẩu và bảo mật > Xác thực 2 yếu tố.",
     "2. Thử các phương án: mã từ ứng dụng xác thực, SMS, email, mã khôi phục, thiết bị đã đăng nhập.",
     "3. Kiểm tra giờ trên điện thoại có đúng không nếu dùng app xác thực.",
     "4. Nếu đổi số điện thoại/email gần đây, kiểm tra email cũ xem Facebook có gửi thông báo thay đổi không.",
@@ -168,7 +168,7 @@ function twoFactorFlow() {
     `Hướng dẫn 2FA chính thức: ${SUPPORT_LINKS.twoFactor}`,
     `Khôi phục khi nghi bị hack: ${SUPPORT_LINKS.hackedAccount}`,
     "",
-    "Không gửi mã 2FA cho bất kỳ ai, kể cả bot. Nếu bạn gửi nội dung thông báo lỗi, hãy che mã đăng nhập trước."
+    "Không gửi mã 2FA cho bất kỳ ai, kể cả bot. Nếu Anh/Chị gửi nội dung thông báo lỗi, hãy che mã đăng nhập trước."
   ].join("\n");
 }
 
@@ -176,8 +176,8 @@ function loginAlertFlow() {
   return [
     "Nếu có thiết bị lạ đăng nhập, làm ngay theo thứ tự này:",
     "",
-    "1. Đổi mật khẩu Facebook từ thiết bị bạn tin tưởng.",
-    "2. Vào Nơi bạn đã đăng nhập và đăng xuất tất cả thiết bị lạ.",
+    "1. Đổi mật khẩu Facebook từ thiết bị Anh/Chị tin tưởng.",
+    "2. Vào Nơi Anh/Chị đã đăng nhập và đăng xuất tất cả thiết bị lạ.",
     "3. Bật xác thực 2 yếu tố.",
     "4. Bật cảnh báo đăng nhập lạ.",
     "5. Kiểm tra email, số điện thoại, tài khoản liên kết, Page, Business và tài khoản quảng cáo xem có ai bị thêm lạ không.",
@@ -185,7 +185,7 @@ function loginAlertFlow() {
     `Công cụ chính thức: ${SUPPORT_LINKS.securityCheckup}`,
     `Nếu nghi bị hack: ${SUPPORT_LINKS.hackedAccount}`,
     "",
-    "Mình không thể tự giám sát thiết bị đăng nhập cá nhân theo thời gian thực vì Facebook không mở API đó cho bot Page. Nhưng khi bạn nhận cảnh báo, gửi nội dung cảnh báo cho mình, mình sẽ hướng dẫn bước tiếp theo."
+    "Em không thể tự giám sát thiết bị đăng nhập cá nhân theo thời gian thực vì Facebook không mở API đó cho bot Page. Nhưng khi Anh/Chị nhận cảnh báo, gửi nội dung cảnh báo cho em, em sẽ hướng dẫn bước tiếp theo."
   ].join("\n");
 }
 
@@ -194,7 +194,7 @@ function hackedAccountFlow() {
     "Luồng xử lý tài khoản Facebook bị hack:",
     "",
     `1. Mở công cụ khôi phục chính thức: ${SUPPORT_LINKS.hackedAccount}`,
-    "2. Dùng thiết bị và mạng bạn từng đăng nhập trước đây.",
+    "2. Dùng thiết bị và mạng Anh/Chị từng đăng nhập trước đây.",
     "3. Nếu email/số điện thoại bị đổi, kiểm tra email cũ để tìm link đảo ngược thay đổi.",
     "4. Sau khi vào lại được: đổi mật khẩu, bật 2FA, xóa thiết bị lạ, kiểm tra Page/Business/Ads.",
     "5. Kiểm tra app/website đã liên kết và gỡ app lạ.",
@@ -213,7 +213,7 @@ function hackedPageFlow() {
     "4. Kiểm tra người lạ, đối tác lạ, app lạ, tài khoản quảng cáo lạ trong Business.",
     "5. Nếu tài khoản cá nhân admin cũng bị hack, xử lý tài khoản cá nhân trước.",
     "",
-    "Gửi mình: bạn còn vào được tài khoản cá nhân không, còn thấy Page trong Business không, Page mất quyền từ lúc nào. Mình sẽ viết checklist khôi phục sát hơn."
+    "Gửi em: Anh/Chị còn vào được tài khoản cá nhân không, còn thấy Page trong Business không, Page mất quyền từ lúc nào. Em sẽ viết checklist khôi phục sát hơn."
   ].join("\n");
 }
 
@@ -223,11 +223,11 @@ function lockedAccountFlow() {
     "",
     `1. Kiểm tra luồng khôi phục tài khoản: ${SUPPORT_LINKS.accountRecovery}`,
     `2. Nếu Facebook báo tài khoản bị khóa: ${SUPPORT_LINKS.lockedAccount}`,
-    "3. Đăng nhập bằng thiết bị và mạng bạn từng dùng trước đây.",
+    "3. Đăng nhập bằng thiết bị và mạng Anh/Chị từng dùng trước đây.",
     "4. Làm theo màn hình xác minh danh tính nếu Facebook yêu cầu.",
     "5. Không gửi giấy tờ tùy thân cho bot hoặc người lạ; chỉ gửi trong biểu mẫu chính thức của Facebook.",
     "",
-    "Bạn gửi mình nguyên văn thông báo Facebook đang hiện, mình sẽ giải thích và chỉ bước tiếp theo."
+    "Anh/Chị gửi em nguyên văn thông báo Facebook đang hiện, em sẽ giải thích và chỉ bước tiếp theo."
   ].join("\n");
 }
 
@@ -243,7 +243,7 @@ function pageQualityFlow() {
     "",
     `Tiêu chuẩn cộng đồng Meta: ${SUPPORT_LINKS.policies}`,
     "",
-    "Gửi mình nguyên văn lỗi Page đang báo, mình sẽ soạn mẫu kháng nghị phù hợp."
+    "Gửi em nguyên văn lỗi Page đang báo, em sẽ soạn mẫu kháng nghị phù hợp."
   ].join("\n");
 }
 
@@ -260,7 +260,7 @@ function adsFlow() {
     "Mẫu kháng nghị:",
     "Chúng tôi tin rằng quảng cáo/tài khoản này bị đánh giá nhầm. Nội dung tuân thủ chính sách Meta, không gây hiểu nhầm và không né tránh hệ thống xét duyệt. Vui lòng xem xét lại.",
     "",
-    "Gửi mình ảnh chụp lỗi hoặc nguyên văn lý do từ chối, mình sẽ phân tích và viết kháng nghị sát hơn."
+    "Gửi em ảnh chụp lỗi hoặc nguyên văn lý do từ chối, em sẽ phân tích và viết kháng nghị sát hơn."
   ].join("\n");
 }
 
@@ -277,7 +277,7 @@ function businessVerificationFlow() {
     `Tài liệu xác minh doanh nghiệp Facebook: ${SUPPORT_LINKS.businessVerificationDocs}`,
     `Trung tâm hỗ trợ doanh nghiệp: ${SUPPORT_LINKS.businessHelp}`,
     "",
-    "Gửi mình thông báo lỗi xác minh, mình sẽ chỉ ra phần nào có khả năng không khớp."
+    "Gửi em thông báo lỗi xác minh, em sẽ chỉ ra phần nào có khả năng không khớp."
   ].join("\n");
 }
 
@@ -286,14 +286,14 @@ function messengerFlow() {
     "Luồng xử lý Messenger/Page Inbox không gửi hoặc không nhận tin:",
     "",
     "1. Kiểm tra Page có bật nhắn tin không.",
-    "2. Kiểm tra bạn đang xem đúng hộp thư trong Meta Business Suite/Page Inbox.",
+    "2. Kiểm tra Anh/Chị đang xem đúng hộp thư trong Meta Business Suite/Page Inbox.",
     "3. Nếu dùng bot hoặc công cụ bên thứ ba, kiểm tra quyền webhook, quyền app và handover/primary receiver.",
     "4. Test bằng tài khoản không phải admin Page để tránh nhầm với chế độ app đang phát triển.",
     "5. Nếu tin nhắn gửi được nhưng bot không trả lời, kiểm tra Render Logs, PAGE_ACCESS_TOKEN và webhook field messages.",
     "",
     `Hướng dẫn Messenger chính thức: ${SUPPORT_LINKS.messengerIssue}`,
     "",
-    "Bạn gửi mình: bạn không nhận tin trong Page Inbox, bot không nhận, hay bot nhận nhưng không trả lời. Mình sẽ khoanh vùng tiếp."
+    "Anh/Chị gửi em: Anh/Chị không nhận tin trong Page Inbox, bot không nhận, hay bot nhận nhưng không trả lời. Em sẽ khoanh vùng tiếp."
   ].join("\n");
 }
 
@@ -303,9 +303,9 @@ function adminAccessFlow() {
     "",
     `1. Vào Business Settings: ${SUPPORT_LINKS.businessSettings}`,
     "2. Kiểm tra People/Người dùng, Partners/Đối tác, Pages/Tài sản.",
-    "3. Gỡ người lạ hoặc đối tác lạ nếu bạn còn quyền quản trị hợp lệ.",
+    "3. Gỡ người lạ hoặc đối tác lạ nếu Anh/Chị còn quyền quản trị hợp lệ.",
     "4. Bật 2FA bắt buộc cho người quản lý Business nếu có tùy chọn.",
-    "5. Nếu bạn bị mất quyền, thu thập bằng chứng quyền cũ, email thông báo, link Page, Business ID.",
+    "5. Nếu Anh/Chị bị mất quyền, thu thập bằng chứng quyền cũ, email thông báo, link Page, Business ID.",
     "",
     "Không thêm admin lạ, không cấp toàn quyền cho người hỗ trợ không đáng tin. Nếu cần phân quyền, hãy cấp mức thấp nhất đủ dùng."
   ].join("\n");
@@ -315,13 +315,13 @@ function pageNameFlow() {
   return [
     "Luồng đổi tên Page hoặc username Page:",
     "",
-    "1. Kiểm tra bạn có quyền quản lý Page đủ cao không.",
+    "1. Kiểm tra Anh/Chị có quyền quản lý Page đủ cao không.",
     "2. Tên mới phải phản ánh đúng Page, không gây nhầm lẫn, không mạo danh, không dùng ký tự/thương hiệu trái phép.",
     "3. Vào Page Settings hoặc Page access để tìm phần chỉnh sửa tên/username.",
     "4. Nếu bị từ chối, chờ một thời gian rồi thử tên gần với thương hiệu thật hơn.",
     "5. Nếu Page vừa đổi tên hoặc vừa chuyển quyền, Meta có thể hạn chế đổi tiếp trong một thời gian.",
     "",
-    "Gửi mình tên Page cũ và tên muốn đổi, mình sẽ kiểm tra rủi ro bị từ chối và đề xuất tên an toàn hơn."
+    "Gửi em tên Page cũ và tên muốn đổi, em sẽ kiểm tra rủi ro bị từ chối và đề xuất tên an toàn hơn."
   ].join("\n");
 }
 
@@ -333,11 +333,11 @@ function contentReportFlow() {
     "2. Chọn dấu ba chấm hoặc Báo cáo/Tìm hỗ trợ.",
     "3. Chọn lý do đúng nhất: giả mạo, lừa đảo, quấy rối, đe dọa, bạo lực, spam, bản quyền, nội dung nhạy cảm.",
     "4. Chụp màn hình và lưu link nội dung trước khi báo cáo.",
-    "5. Nếu liên quan tài khoản/Page của bạn, ghi rõ tác động và bằng chứng sở hữu.",
+    "5. Nếu liên quan tài khoản/Page của Anh/Chị, ghi rõ tác động và bằng chứng sở hữu.",
     "",
     `Tiêu chuẩn cộng đồng: ${SUPPORT_LINKS.policies}`,
     "",
-    "Gửi mình nội dung hoặc mô tả vi phạm, mình sẽ giúp chọn lý do báo cáo và viết mô tả ngắn gọn."
+    "Gửi em nội dung hoặc mô tả vi phạm, em sẽ giúp chọn lý do báo cáo và viết mô tả ngắn gọn."
   ].join("\n");
 }
 
@@ -357,7 +357,7 @@ function scamFlow() {
     "4. Đổi mật khẩu và bật 2FA nếu đã lỡ bấm link.",
     `5. Đọc hướng dẫn chính thức: ${SUPPORT_LINKS.scams}`,
     "",
-    "Bạn có thể gửi nội dung tin nhắn đáng ngờ, mình sẽ giúp phân tích có phải lừa đảo không."
+    "Anh/Chị có thể gửi nội dung tin nhắn đáng ngờ, em sẽ giúp phân tích có phải lừa đảo không."
   ].join("\n");
 }
 
@@ -373,7 +373,7 @@ function monetizationFlow() {
     "",
     `Kiểm tra Account Quality trước: ${SUPPORT_LINKS.accountQuality}`,
     "",
-    "Gửi mình thông báo không đủ điều kiện, mình sẽ phân tích lý do và viết checklist sửa."
+    "Gửi em thông báo không đủ điều kiện, em sẽ phân tích lý do và viết checklist sửa."
   ].join("\n");
 }
 
