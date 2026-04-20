@@ -98,10 +98,12 @@ app.post("/webhook", async (req, res) => {
 async function handleMessagingEvent(event) {
   if (event.message?.is_echo) return;
 
-  const psid = event.sender?.id;
-  if (!psid) return;
+const psid = event.sender?.id;
+if (!psid) return;
+if (config.pageId && psid === config.pageId) return;
+if (!event.message && !event.postback) return;
 
-  const text = await extractUserText(event);
+const text = await extractUserText(event);
   if (!text) {
     await facebook.sendText(psid, "Minh nhan duoc tin nhan roi, nhung hien chi xu ly duoc van ban hoac audio. Ban gui lai giup minh nhe.");
     return;
