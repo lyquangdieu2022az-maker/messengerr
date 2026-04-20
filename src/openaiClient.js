@@ -17,6 +17,8 @@ export class AiClient {
     this.fallbackModel = config.fallbackModel || "gpt-4o-mini";
     this.primaryTimeoutMs = Number(config.primaryTimeoutMs || 12000);
     this.geminiModel = config.geminiModel || "gemini-2.5-flash-lite";
+    this.geminiFallbackModels = parseCsv(config.geminiFallbackModels || "gemini-2.5-flash");
+    this.geminiMaxRetries = Number(config.geminiMaxRetries || 1);
     this.reasoningEffort = config.reasoningEffort || "medium";
     this.ttsModel = config.ttsModel || "gpt-4o-mini-tts";
     this.transcribeModel = config.transcribeModel || "gpt-4o-mini-transcribe";
@@ -156,7 +158,36 @@ export class AiClient {
       throw new Error("GEMINI_API_KEY is missing.");
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(this.geminiModel)}:generateContent?key=${encodeURIComponent(this.geminiApiKey)}`;
+    const models = [this.geminiModel, ...this.geminiFallbackModels].filter(
+      (model, index, all) => model && all.indexOf(model) === index
+    );
+    let lastError = null;
+
+    for (const model of models) {
+      for (let attempt = 0; attempt <= this.geminiMaxRetries; attempt += 1) {
+        try {
+          return await this.callGeminiModel({ model, contents });
+        } catch (error) {
+          lastError = error;
+          const canRetry = isRetryableGeminiError(error) && attempt < this.geminiMaxRetries;
+          if (!canRetry) break;
+
+          const delayMs = 700 * (attempt + 1);
+          console.warn(`Gemini model ${model} failed temporarily, retrying in ${delayMs}ms:`, error.message);
+          await sleep(delayMs);
+        }
+      }
+
+      if (models.length > 1) {
+        console.warn(`Gemini model ${model} failed, trying fallback model if available:`, lastError?.message);
+      }
+    }
+
+    throw lastError || new Error("Gemini API failed.");
+  }
+
+  async callGeminiModel({ model, contents }) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(this.geminiApiKey)}`;
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -171,7 +202,9 @@ export class AiClient {
 
     if (!response.ok) {
       const errorBody = await response.text();
-      throw new Error(`Gemini API failed: ${response.status} ${errorBody}`);
+      const error = new Error(`Gemini API failed for ${model}: ${response.status} ${errorBody}`);
+      error.status = response.status;
+      throw error;
     }
 
     const data = await response.json();
@@ -236,6 +269,23 @@ export class AiClient {
   canTranscribeAudio() {
     return Boolean(this.client);
   }
+}
+
+function parseCsv(value) {
+  return String(value || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function isRetryableGeminiError(error) {
+  return [500, 502, 503, 504].includes(error.status);
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 function withTimeout(promise, timeoutMs, message) {

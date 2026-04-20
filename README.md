@@ -122,10 +122,13 @@ Khong gui mat khau, ma 2FA, token, cookie hoac giay to nhay cam vao bot.
 AI_PROVIDER=gemini
 GEMINI_API_KEY=key_lay_tu_Google_AI_Studio
 GEMINI_MODEL=gemini-2.5-flash-lite
+GEMINI_FALLBACK_MODELS=gemini-2.5-flash
+GEMINI_MAX_RETRIES=1
 VOICE_REPLIES_DEFAULT=false
 ```
 
 Tinh nang chat chu co the dung Gemini free tier co gioi han. Neu muon mien phi, nen de `VOICE_REPLIES_DEFAULT=false`.
+Neu Gemini bao `503 UNAVAILABLE`, bot se thu lai 1 lan va doi sang model du phong trong `GEMINI_FALLBACK_MODELS`.
 
 Khi khong co OpenAI key, bot se tu bo qua voice/audio de tranh loi. Nguoi dung van chat chu binh thuong.
 

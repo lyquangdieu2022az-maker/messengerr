@@ -16,6 +16,10 @@ services:
         value: gemini
       - key: GEMINI_MODEL
         value: gemini-2.5-flash-lite
+      - key: GEMINI_FALLBACK_MODELS
+        value: gemini-2.5-flash
+      - key: GEMINI_MAX_RETRIES
+        value: "1"
       - key: BOT_NAME
         value: Tro Ly Facebook AI
       - key: VOICE_REPLIES_DEFAULT

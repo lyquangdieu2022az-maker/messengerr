@@ -25,6 +25,8 @@ Bat buoc:
 AI_PROVIDER=gemini
 GEMINI_API_KEY=key_lay_tu_Google_AI_Studio
 GEMINI_MODEL=gemini-2.5-flash-lite
+GEMINI_FALLBACK_MODELS=gemini-2.5-flash
+GEMINI_MAX_RETRIES=1
 VERIFY_TOKEN=tu_dat_mot_chuoi_bat_ky
 PAGE_ACCESS_TOKEN=EAAB...
 PAGE_ID=id_page

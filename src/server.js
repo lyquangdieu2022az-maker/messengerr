@@ -77,6 +77,8 @@ const ai = new AiClient({
   primaryTimeoutMs: process.env.OPENAI_PRIMARY_TIMEOUT_MS,
   geminiApiKey: process.env.GEMINI_API_KEY,
   geminiModel: process.env.GEMINI_MODEL,
+  geminiFallbackModels: process.env.GEMINI_FALLBACK_MODELS,
+  geminiMaxRetries: process.env.GEMINI_MAX_RETRIES,
   ttsVoice: process.env.OPENAI_TTS_VOICE,
   botName: config.botName
 });
