@@ -42,51 +42,14 @@ function buildPersistentMenu() {
           payload: MENU_PAYLOADS.askAi
         },
         {
-          type: "nested",
-          title: "Hỗ trợ Facebook",
-          call_to_actions: [
-            {
-              type: "postback",
-              title: "Tài khoản bị khóa",
-              payload: MENU_PAYLOADS.lockedAccount
-            },
-            {
-              type: "postback",
-              title: "Tài khoản bị hack",
-              payload: MENU_PAYLOADS.hackedAccount
-            },
-            {
-              type: "postback",
-              title: "Mất quyền Page",
-              payload: MENU_PAYLOADS.pageAccess
-            },
-            {
-              type: "postback",
-              title: "Thiết bị lạ",
-              payload: MENU_PAYLOADS.loginAlert
-            },
-            {
-              type: "postback",
-              title: "Lừa đảo/phishing",
-              payload: MENU_PAYLOADS.scam
-            }
-          ]
+          type: "postback",
+          title: "Tạo báo cáo",
+          payload: MENU_PAYLOADS.report
         },
         {
-          type: "nested",
-          title: "Công cụ",
-          call_to_actions: [
-            {
-              type: "postback",
-              title: "Tạo báo cáo",
-              payload: MENU_PAYLOADS.report
-            },
-            {
-              type: "postback",
-              title: "Trợ giúp",
-              payload: MENU_PAYLOADS.help
-            }
-          ]
+          type: "postback",
+          title: "Trợ giúp",
+          payload: MENU_PAYLOADS.help
         }
       ]
     }

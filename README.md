@@ -105,8 +105,8 @@ Nen de `SETUP_MESSENGER_GREETING_ON_START=false` vi mot so app/page bi Meta tu c
 Menu gom:
 
 - Hoi AI
-- Ho tro Facebook: tai khoan bi khoa, bi hack, mat Page, thiet bi la, lua dao/phishing
-- Cong cu: tao bao cao, tro giup
+- Tao bao cao
+- Tro giup
 
 Tin nhan binh thuong van hoat dong nhu cu. Menu chi la nut bam nhanh cho nguoi dung.
 
