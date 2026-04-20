@@ -40,7 +40,7 @@ export class AiClient {
       input
     });
 
-    return response.output_text?.trim() || "Minh chua tao duoc cau tra loi. Ban gui lai giup minh nhe.";
+    return response.output_text?.trim() || "Mình chưa tạo được câu trả lời. Bạn gửi lại giúp mình nhé.";
   }
 
   async summarizeMemory({ memory, userText, assistantText }) {
@@ -50,11 +50,11 @@ export class AiClient {
       input: [
         {
           role: "developer",
-          content: "Tom tat ngan gon bang tieng Viet cac thong tin ben vung nen nho cho lan sau. Khong luu bi mat, token, mat khau, ma 2FA, cookie hoac giay to nhay cam. Toi da 120 tu."
+          content: "Tóm tắt ngắn gọn bằng tiếng Việt có dấu các thông tin bền vững nên nhớ cho lần sau. Không lưu bí mật, token, mật khẩu, mã 2FA, cookie hoặc giấy tờ nhạy cảm. Tối đa 120 từ."
         },
         {
           role: "user",
-          content: `Tom tat cu:\n${memory.summary || "(trong)"}\n\nTin nhan moi cua nguoi dung:\n${userText}\n\nCau tra loi cua bot:\n${assistantText}`
+          content: `Tóm tắt cũ:\n${memory.summary || "(trống)"}\n\nTin nhắn mới của người dùng:\n${userText}\n\nCâu trả lời của bot:\n${assistantText}`
         }
       ]
     });
@@ -91,7 +91,7 @@ export class AiClient {
       model: this.ttsModel,
       voice: this.ttsVoice,
       input: speechText,
-      instructions: "Noi tieng Viet ro rang, binh tinh, than thien. Day la giong noi AI, khong phai nguoi that."
+      instructions: "Nói tiếng Việt rõ ràng, bình tĩnh, thân thiện. Đây là giọng nói AI, không phải người thật."
     });
 
     const buffer = Buffer.from(await audio.arrayBuffer());

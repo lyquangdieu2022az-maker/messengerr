@@ -1,6 +1,6 @@
 # Deploy len Render
 
-Project nay da co `render.yaml`, `package.json`, `package-lock.json` va script `npm start`, nen Render co the deploy truc tiep.
+Project nay da co `render.yaml`, `package.json` va script `npm start`, nen Render co the deploy truc tiep.
 
 ## Cach nhanh nhat
 
@@ -12,7 +12,7 @@ Project nay da co `render.yaml`, `package.json`, `package-lock.json` va script `
 
 ```text
 Runtime: Node
-Build Command: npm ci
+Build Command: npm install
 Start Command: npm start
 Health Check Path: /
 ```

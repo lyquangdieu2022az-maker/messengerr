@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { AiClient } from "./openaiClient.js";
 import { FacebookClient } from "./facebookClient.js";
+import { getFacebookFlowReply, mainHelp } from "./facebookFlows.js";
 import { MemoryStore } from "./memoryStore.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -98,14 +99,13 @@ app.post("/webhook", async (req, res) => {
 async function handleMessagingEvent(event) {
   if (event.message?.is_echo) return;
 
-const psid = event.sender?.id;
-if (!psid) return;
-if (config.pageId && psid === config.pageId) return;
-if (!event.message && !event.postback) return;
+  const psid = event.sender?.id;
+  if (!psid) return;
+  if (config.pageId && psid === config.pageId) return;
+  if (!event.message && !event.postback) return;
 
-const text = await extractUserText(event);
+  const text = await extractUserText(event);
   if (!text) {
-    await facebook.sendText(psid, "Minh nhan duoc tin nhan roi, nhung hien chi xu ly duoc van ban hoac audio. Ban gui lai giup minh nhe.");
     return;
   }
 
@@ -153,7 +153,7 @@ async function extractUserText(event) {
   const postback = event.postback;
 
   if (postback?.payload) {
-    return `Nguoi dung bam nut: ${postback.payload}`;
+    return `Người dùng bấm nút: ${postback.payload}`;
   }
 
   if (message?.text) {
@@ -174,16 +174,13 @@ async function handleLocalCommand(psid, rawText) {
   const normalized = normalizeCommand(text);
 
   if (["help", "tro giup", "bat dau"].includes(normalized)) {
-    await facebook.sendText(
-      psid,
-      [
-        `Minh la ${config.botName}. Ban co the hoi ve Page, Messenger, quang cao, Business Suite, bao mat tai khoan hoac cach xu ly loi Facebook.`,
-        "Lenh nhanh:",
-        "- nho rang <thong tin>: luu ghi nho cho lan sau",
-        "- quen toi: xoa ghi nho cua ban",
-        "- bat giong noi / tat giong noi: bat hoac tat audio tra loi"
-      ].join("\n")
-    );
+    await facebook.sendText(psid, mainHelp(config.botName));
+    return true;
+  }
+
+  const flowReply = getFacebookFlowReply(normalized);
+  if (flowReply) {
+    await facebook.sendText(psid, flowReply);
     return true;
   }
 
@@ -191,14 +188,14 @@ async function handleLocalCommand(psid, rawText) {
     const fact = text.split(/\s+/).slice(2).join(" ").trim();
     if (fact) {
       await memoryStore.addFact(psid, fact);
-      await facebook.sendText(psid, "Minh da ghi nho thong tin nay cho nhung lan tra loi sau.");
+      await facebook.sendText(psid, "Mình đã ghi nhớ thông tin này cho những lần trả lời sau.");
     }
     return true;
   }
 
   if (["quen toi", "xoa ghi nho"].includes(normalized)) {
     await memoryStore.forgetUser(psid);
-    await facebook.sendText(psid, "Minh da xoa ghi nho hoi thoai cua ban tren bot nay.");
+    await facebook.sendText(psid, "Mình đã xóa ghi nhớ hội thoại của bạn trên bot này.");
     return true;
   }
 
@@ -207,15 +204,15 @@ async function handleLocalCommand(psid, rawText) {
     await facebook.sendText(
       psid,
       config.publicBaseUrl
-        ? "Da bat tra loi bang giong noi AI. Minh van gui kem van ban de ban de xem lai."
-        : "Minh da bat tuy chon giong noi, nhung ban can cau hinh PUBLIC_BASE_URL de Facebook tai duoc file audio."
+        ? "Đã bật trả lời bằng giọng nói AI. Mình vẫn gửi kèm văn bản để bạn dễ xem lại."
+        : "Mình đã bật tùy chọn giọng nói, nhưng bạn cần cấu hình PUBLIC_BASE_URL để Facebook tải được file audio."
     );
     return true;
   }
 
   if (["tat giong noi", "voice off"].includes(normalized)) {
     await memoryStore.setVoiceReplies(psid, false);
-    await facebook.sendText(psid, "Da tat tra loi bang giong noi.");
+    await facebook.sendText(psid, "Đã tắt trả lời bằng giọng nói.");
     return true;
   }
 
