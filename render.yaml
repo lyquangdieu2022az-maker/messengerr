@@ -14,6 +14,8 @@ services:
         value: v25.0
       - key: OPENAI_MODEL
         value: gpt-5.4
+      - key: OPENAI_FALLBACK_MODEL
+        value: gpt-4o-mini
       - key: OPENAI_REASONING_EFFORT
         value: medium
       - key: OPENAI_TTS_MODEL
@@ -26,6 +28,8 @@ services:
         value: Tro Ly Facebook AI
       - key: VOICE_REPLIES_DEFAULT
         value: "false"
+      - key: AI_REPLY_TIMEOUT_MS
+        value: "15000"
       - key: MAX_HISTORY_MESSAGES
         value: "16"
       - key: MAX_MEMORY_FACTS

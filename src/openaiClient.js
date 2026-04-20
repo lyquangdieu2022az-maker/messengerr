@@ -7,6 +7,7 @@ export class AiClient {
   constructor(config) {
     this.client = new OpenAI({ apiKey: config.apiKey });
     this.model = config.model || "gpt-5.4";
+    this.fallbackModel = config.fallbackModel || "gpt-4o-mini";
     this.reasoningEffort = config.reasoningEffort || "medium";
     this.ttsModel = config.ttsModel || "gpt-4o-mini-tts";
     this.transcribeModel = config.transcribeModel || "gpt-4o-mini-transcribe";
@@ -34,20 +35,14 @@ export class AiClient {
       }
     ];
 
-    const response = await this.client.responses.create({
-      model: this.model,
-      reasoning: { effort: this.reasoningEffort },
-      input
-    });
+    const response = await this.createResponseWithFallback(input, this.reasoningEffort);
 
     return response.output_text?.trim() || "Mình chưa tạo được câu trả lời. Bạn gửi lại giúp mình nhé.";
   }
 
   async summarizeMemory({ memory, userText, assistantText }) {
-    const response = await this.client.responses.create({
-      model: this.model,
-      reasoning: { effort: "low" },
-      input: [
+    const response = await this.createResponseWithFallback(
+      [
         {
           role: "developer",
           content: "Tóm tắt ngắn gọn bằng tiếng Việt có dấu các thông tin bền vững nên nhớ cho lần sau. Không lưu bí mật, token, mật khẩu, mã 2FA, cookie hoặc giấy tờ nhạy cảm. Tối đa 120 từ."
@@ -56,10 +51,31 @@ export class AiClient {
           role: "user",
           content: `Tóm tắt cũ:\n${memory.summary || "(trống)"}\n\nTin nhắn mới của người dùng:\n${userText}\n\nCâu trả lời của bot:\n${assistantText}`
         }
-      ]
-    });
+      ],
+      "low"
+    );
 
     return response.output_text?.trim() || memory.summary || "";
+  }
+
+  async createResponseWithFallback(input, effort) {
+    try {
+      return await this.client.responses.create({
+        model: this.model,
+        reasoning: { effort },
+        input
+      });
+    } catch (error) {
+      if (!this.fallbackModel || this.fallbackModel === this.model) {
+        throw error;
+      }
+
+      console.error(`Primary OpenAI model failed (${this.model}), retrying with ${this.fallbackModel}:`, error);
+      return this.client.responses.create({
+        model: this.fallbackModel,
+        input
+      });
+    }
   }
 
   async transcribeAudioFromUrl(audioUrl) {

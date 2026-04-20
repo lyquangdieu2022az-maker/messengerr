@@ -1,11 +1,12 @@
 # Facebook AI Support Bot
 
-Bot Messenger dung OpenAI de tra loi co logic, nho ngu canh theo tung nguoi dung va co the gui kem audio giong noi AI.
+Bot Messenger dung OpenAI de tra loi co logic, nho ngu canh theo tung nguoi dung va co the gui kem audio giong noi AI. Bot uu tien ho tro Facebook/Meta, nhung van co the tro chuyen tu nhien ve chu de khac nhu nau an, vui choi, hoc tap, cong viec, viet noi dung va tam su.
 
 ## Tinh nang
 
 - Webhook Facebook Messenger: xac minh `GET /webhook`, nhan tin nhan `POST /webhook`.
 - AI tra loi bang Responses API voi model mac dinh `gpt-5.4`.
+- Tro chuyen da nang: hoi Facebook thi xu ly chuyen sau, hoi chuyen khac thi tra loi dung chu de.
 - Bo nho hoi thoai theo PSID trong `data/memory.json`.
 - Lenh luu/xoa ghi nho: `nho rang ...`, `quen toi`.
 - Nhan audio tu Messenger, chuyen thanh text bang `gpt-4o-mini-transcribe`.

@@ -25,6 +25,8 @@ const config = {
   botName: process.env.BOT_NAME || "Tro Ly Facebook AI"
 };
 
+const AI_REPLY_TIMEOUT_MS = Number(process.env.AI_REPLY_TIMEOUT_MS || 15000);
+
 const app = express();
 app.use(express.static(publicDir));
 app.use(
@@ -48,6 +50,7 @@ const ai = new AiClient({
   reasoningEffort: process.env.OPENAI_REASONING_EFFORT,
   ttsModel: process.env.OPENAI_TTS_MODEL,
   transcribeModel: process.env.OPENAI_TRANSCRIBE_MODEL,
+  fallbackModel: process.env.OPENAI_FALLBACK_MODEL,
   ttsVoice: process.env.OPENAI_TTS_VOICE,
   botName: config.botName
 });
@@ -117,35 +120,90 @@ async function handleMessagingEvent(event) {
     await facebook.sendAction(psid, "typing_on");
 
     const memory = await memoryStore.getUser(psid);
-    const answer = await ai.answer({ text, memory });
+    const answer = await answerWithFallback({ text, memory });
 
     await facebook.sendText(psid, answer);
+    await memoryStore.updateUser(psid, (current) => ({
+      ...current,
+      lastSupportTopic: text
+    }));
+    await memoryStore.appendTurn(psid, text, answer);
 
     const shouldSendVoice = memory.voiceReplies ?? config.voiceRepliesDefault;
     if (shouldSendVoice && config.publicBaseUrl) {
-      const audioUrl = await ai.createSpeech({
-        text: answer,
-        outputDir: audioDir,
-        publicBaseUrl: config.publicBaseUrl
-      });
-      await facebook.sendAudio(psid, audioUrl);
+      try {
+        const audioUrl = await ai.createSpeech({
+          text: answer,
+          outputDir: audioDir,
+          publicBaseUrl: config.publicBaseUrl
+        });
+        await facebook.sendAudio(psid, audioUrl);
+      } catch (error) {
+        console.error("Voice reply failed:", error);
+      }
     }
 
-    const latestMemory = await memoryStore.getUser(psid);
-    const summary = await ai.summarizeMemory({
-      memory: latestMemory,
-      userText: text,
-      assistantText: answer
-    });
+    try {
+      const latestMemory = await memoryStore.getUser(psid);
+      const summary = await withTimeout(
+        ai.summarizeMemory({
+          memory: latestMemory,
+          userText: text,
+          assistantText: answer
+        }),
+        AI_REPLY_TIMEOUT_MS,
+        "AI memory summary timed out"
+      );
 
-    await memoryStore.updateUser(psid, (current) => ({
-      ...current,
-      summary
-    }));
-    await memoryStore.appendTurn(psid, text, answer);
+      await memoryStore.updateUser(psid, (current) => ({
+        ...current,
+        summary
+      }));
+    } catch (error) {
+      console.error("Memory summary failed:", error);
+    }
   } finally {
     await facebook.sendAction(psid, "typing_off");
   }
+}
+
+async function answerWithFallback({ text, memory }) {
+  try {
+    return await withTimeout(
+      ai.answer({ text, memory }),
+      AI_REPLY_TIMEOUT_MS,
+      "AI answer timed out"
+    );
+  } catch (error) {
+    console.error("AI answer failed:", error);
+    const topicLine = memory.lastSupportTopic
+      ? `Mình vẫn nhận được tin của bạn. Ngữ cảnh gần nhất mình đang giữ là: ${memory.lastSupportTopic}`
+      : "Mình vẫn nhận được tin nhắn của bạn.";
+
+    return [
+      topicLine,
+      "",
+      "Phần AI đang gặp lỗi tạm thời nên mình chưa phân tích sâu được ngay, nhưng mình không bỏ qua tin nhắn của bạn.",
+      "",
+      "Bạn có thể nhắn lại theo kiểu ngắn gọn hơn để mình xử lý tiếp:",
+      "1. Bạn muốn mình tư vấn, hướng dẫn, soạn nội dung, nghĩ ý tưởng hay trò chuyện?",
+      "2. Nếu là Facebook/Meta, lỗi đang nằm ở tài khoản, Page, Messenger, Business hay quảng cáo?",
+      "3. Nếu là chuyện khác như nấu ăn, vui chơi, học tập, bạn muốn kết quả theo kiểu nhanh gọn hay chi tiết?",
+      "",
+      `Tin nhắn mình vừa nhận: ${text}`,
+      "",
+      "Nếu đây là vấn đề khẩn cấp về bảo mật Facebook, hãy đổi mật khẩu, bật xác thực 2 yếu tố và kiểm tra thiết bị đăng nhập lạ ngay."
+    ].join("\n");
+  }
+}
+
+function withTimeout(promise, timeoutMs, message) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(message)), timeoutMs);
+    })
+  ]);
 }
 
 async function extractUserText(event) {
@@ -180,6 +238,11 @@ async function handleLocalCommand(psid, rawText) {
 
   const flowReply = getFacebookFlowReply(normalized);
   if (flowReply) {
+    await memoryStore.updateUser(psid, (memory) => ({
+      ...memory,
+      lastSupportTopic: text
+    }));
+    await memoryStore.appendTurn(psid, text, flowReply);
     await facebook.sendText(psid, flowReply);
     return true;
   }
