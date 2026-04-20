@@ -5,12 +5,17 @@ import { buildDeveloperPrompt, buildMemoryContext } from "./prompt.js";
 
 export class AiClient {
   constructor(config) {
-    this.provider = (config.provider || (config.geminiApiKey && !config.apiKey ? "gemini" : "openai")).toLowerCase();
+    const requestedProvider = (config.provider || "").trim().toLowerCase();
     this.client = config.apiKey ? new OpenAI({ apiKey: config.apiKey }) : null;
+    this.geminiApiKey = config.geminiApiKey;
+    this.provider = requestedProvider || (this.geminiApiKey && !this.client ? "gemini" : "openai");
+    if (this.provider !== "gemini" && !this.client && this.geminiApiKey) {
+      console.warn("OPENAI_API_KEY is missing, switching AI provider to Gemini.");
+      this.provider = "gemini";
+    }
     this.model = config.model || "gpt-5.4";
     this.fallbackModel = config.fallbackModel || "gpt-4o-mini";
     this.primaryTimeoutMs = Number(config.primaryTimeoutMs || 12000);
-    this.geminiApiKey = config.geminiApiKey;
     this.geminiModel = config.geminiModel || "gemini-2.5-flash-lite";
     this.reasoningEffort = config.reasoningEffort || "medium";
     this.ttsModel = config.ttsModel || "gpt-4o-mini-tts";
@@ -179,6 +184,10 @@ export class AiClient {
   }
 
   async transcribeAudioFromUrl(audioUrl) {
+    if (!this.client) {
+      throw new Error("OPENAI_API_KEY is required for Messenger audio transcription.");
+    }
+
     const response = await fetch(audioUrl);
     if (!response.ok) {
       throw new Error(`Could not download Messenger audio: ${response.status}`);
@@ -197,6 +206,10 @@ export class AiClient {
   }
 
   async createSpeech({ text, outputDir, publicBaseUrl }) {
+    if (!this.client) {
+      throw new Error("OPENAI_API_KEY is required for voice replies.");
+    }
+
     await fs.mkdir(outputDir, { recursive: true });
 
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.mp3`;
@@ -214,6 +227,14 @@ export class AiClient {
     await fs.writeFile(filePath, buffer);
 
     return `${publicBaseUrl.replace(/\/$/, "")}/audio/${fileName}`;
+  }
+
+  canCreateSpeech() {
+    return Boolean(this.client);
+  }
+
+  canTranscribeAudio() {
+    return Boolean(this.client);
   }
 }
 

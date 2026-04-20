@@ -22,7 +22,9 @@ Health Check Path: /
 Bat buoc:
 
 ```text
-OPENAI_API_KEY=sk-...
+AI_PROVIDER=gemini
+GEMINI_API_KEY=key_lay_tu_Google_AI_Studio
+GEMINI_MODEL=gemini-2.5-flash-lite
 VERIFY_TOKEN=tu_dat_mot_chuoi_bat_ky
 PAGE_ACCESS_TOKEN=EAAB...
 PAGE_ID=id_page
@@ -35,33 +37,17 @@ Khuyen nghi giu mac dinh:
 ```text
 NODE_VERSION=22.22.0
 GRAPH_API_VERSION=v25.0
-AI_PROVIDER=openai
-OPENAI_MODEL=gpt-5.4
-OPENAI_FALLBACK_MODEL=gpt-4o-mini
-OPENAI_PRIMARY_TIMEOUT_MS=12000
-OPENAI_REASONING_EFFORT=medium
-OPENAI_TTS_MODEL=gpt-4o-mini-tts
-OPENAI_TRANSCRIBE_MODEL=gpt-4o-mini-transcribe
-OPENAI_TTS_VOICE=marin
-GEMINI_MODEL=gemini-2.5-flash-lite
 BOT_NAME=Tro Ly Facebook AI
 VOICE_REPLIES_DEFAULT=false
 SETUP_MESSENGER_PROFILE_ON_START=true
+SETUP_MESSENGER_GREETING_ON_START=false
 AI_REPLY_TIMEOUT_MS=30000
 MAX_HISTORY_MESSAGES=16
 MAX_MEMORY_FACTS=40
 REPORT_FILE_PATH=
 ```
 
-Neu muon dung Gemini free tier cho phan chat chu:
-
-```text
-AI_PROVIDER=gemini
-GEMINI_API_KEY=key_lay_tu_Google_AI_Studio
-GEMINI_MODEL=gemini-2.5-flash-lite
-```
-
-Khi dung Gemini, phan chat chu co the chay theo free tier cua Google. Tinh nang audio OpenAI van can `OPENAI_API_KEY`; neu khong can audio, tat `VOICE_REPLIES_DEFAULT=false`.
+Khi dung Gemini, phan chat chu co the chay theo free tier cua Google. Neu khong co OpenAI key, bot se tu bo qua voice/audio de tranh loi.
 
 Neu dung Render free plan, co the de trong:
 

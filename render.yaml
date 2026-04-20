@@ -13,21 +13,7 @@ services:
       - key: GRAPH_API_VERSION
         value: v25.0
       - key: AI_PROVIDER
-        value: openai
-      - key: OPENAI_MODEL
-        value: gpt-5.4
-      - key: OPENAI_FALLBACK_MODEL
-        value: gpt-4o-mini
-      - key: OPENAI_PRIMARY_TIMEOUT_MS
-        value: "12000"
-      - key: OPENAI_REASONING_EFFORT
-        value: medium
-      - key: OPENAI_TTS_MODEL
-        value: gpt-4o-mini-tts
-      - key: OPENAI_TRANSCRIBE_MODEL
-        value: gpt-4o-mini-transcribe
-      - key: OPENAI_TTS_VOICE
-        value: marin
+        value: gemini
       - key: GEMINI_MODEL
         value: gemini-2.5-flash-lite
       - key: BOT_NAME
@@ -36,14 +22,14 @@ services:
         value: "false"
       - key: SETUP_MESSENGER_PROFILE_ON_START
         value: "true"
+      - key: SETUP_MESSENGER_GREETING_ON_START
+        value: "false"
       - key: AI_REPLY_TIMEOUT_MS
         value: "30000"
       - key: MAX_HISTORY_MESSAGES
         value: "16"
       - key: MAX_MEMORY_FACTS
         value: "40"
-      - key: OPENAI_API_KEY
-        sync: false
       - key: GEMINI_API_KEY
         sync: false
       - key: VERIFY_TOKEN

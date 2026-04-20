@@ -1,11 +1,11 @@
 # Facebook AI Support Bot
 
-Bot Messenger dung OpenAI de tra loi co logic, nho ngu canh theo tung nguoi dung va co the gui kem audio giong noi AI. Bot uu tien ho tro Facebook/Meta, nhung van co the tro chuyen tu nhien ve chu de khac nhu nau an, vui choi, hoc tap, cong viec, viet noi dung va tam su.
+Bot Messenger dung Gemini de tra loi co logic, nho ngu canh theo tung nguoi dung va ho tro Facebook/Meta. Bot van co the tro chuyen tu nhien ve chu de khac nhu nau an, vui choi, hoc tap, cong viec, viet noi dung va tam su.
 
 ## Tinh nang
 
 - Webhook Facebook Messenger: xac minh `GET /webhook`, nhan tin nhan `POST /webhook`.
-- AI tra loi bang Responses API voi model mac dinh `gpt-5.4`.
+- AI tra loi bang Gemini voi model mac dinh `gemini-2.5-flash-lite`.
 - Tro chuyen da nang: hoi Facebook thi xu ly chuyen sau, hoi chuyen khac thi tra loi dung chu de.
 - Tro ly tao bao cao/khang nghi ban tu dong: hoi tung thong tin, soan san noi dung, gui link chinh thuc de nguoi dung tu bam gui.
 - Tao trang ban soan tren Render co nut copy noi dung va nut mo link chinh thuc cua Meta/Facebook.
@@ -13,8 +13,7 @@ Bot Messenger dung OpenAI de tra loi co logic, nho ngu canh theo tung nguoi dung
 - Giong tra loi lich su: bot xung em va goi nguoi can ho tro la Anh/Chi.
 - Bo nho hoi thoai theo PSID trong `data/memory.json`.
 - Lenh luu/xoa ghi nho: `nho rang ...`, `quen toi`.
-- Nhan audio tu Messenger, chuyen thanh text bang `gpt-4o-mini-transcribe`.
-- Gui audio tra loi bang `gpt-4o-mini-tts` khi bat `bat giong noi`.
+- Neu dung Gemini mien phi va khong co OpenAI key, bot tu bo qua voice/audio de tranh loi.
 - Kiem tra chu ky webhook bang `APP_SECRET` neu ban cau hinh.
 
 ## Cai dat
@@ -28,7 +27,9 @@ copy .env.example .env
 
 Dien cac bien trong `.env`:
 
-- `OPENAI_API_KEY`: API key OpenAI.
+- `AI_PROVIDER`: dat `gemini`.
+- `GEMINI_API_KEY`: API key Gemini lay tu Google AI Studio.
+- `GEMINI_MODEL`: model Gemini, mac dinh `gemini-2.5-flash-lite`.
 - `VERIFY_TOKEN`: chuoi ban tu dat, phai giong trong Meta Developer Dashboard.
 - `PAGE_ACCESS_TOKEN`: Page access token cua Facebook Page.
 - `PAGE_ID`: ID cua Page. Neu endpoint Page-specific loi, co the bo trong de dung `/me/messages`.
@@ -95,8 +96,11 @@ Sau khi deploy, bot se tu cai menu co dinh neu co:
 
 ```env
 SETUP_MESSENGER_PROFILE_ON_START=true
+SETUP_MESSENGER_GREETING_ON_START=false
 PAGE_ACCESS_TOKEN=token_page_cua_ban
 ```
+
+Nen de `SETUP_MESSENGER_GREETING_ON_START=false` vi mot so app/page bi Meta tu choi truong greeting. Menu co dinh van cai duoc binh thuong.
 
 Menu gom:
 
@@ -112,11 +116,7 @@ Bot nay khong the va khong nen hua xu ly 100% moi van de Facebook. Cac viec nhu 
 
 Khong gui mat khau, ma 2FA, token, cookie hoac giay to nhay cam vao bot.
 
-## Dung AI mien phi hon
-
-OpenAI API thuong can credits/billing. Neu het credits, bot van nhan tin Messenger nhung phan AI se tra fallback.
-
-Co the chuyen phan chat chu sang Gemini free tier:
+## Dung Gemini free tier
 
 ```env
 AI_PROVIDER=gemini
@@ -125,13 +125,14 @@ GEMINI_MODEL=gemini-2.5-flash-lite
 VOICE_REPLIES_DEFAULT=false
 ```
 
-Khi dung Gemini, tinh nang chat chu co the dung free tier co gioi han. Tinh nang audio/transcribe van can OpenAI API, nen neu muon mien phi thi nen tat tra loi bang giong noi.
+Tinh nang chat chu co the dung Gemini free tier co gioi han. Neu muon mien phi, nen de `VOICE_REPLIES_DEFAULT=false`.
 
-Neu van dung OpenAI, kiem tra:
+Khi khong co OpenAI key, bot se tu bo qua voice/audio de tranh loi. Nguoi dung van chat chu binh thuong.
 
-```env
-OPENAI_API_KEY=key_con_hoat_dong
-OPENAI_FALLBACK_MODEL=gpt-4o-mini
-OPENAI_PRIMARY_TIMEOUT_MS=12000
-AI_REPLY_TIMEOUT_MS=30000
+Sau khi deploy, Render logs nen co dong:
+
+```text
+AI provider selected: gemini
 ```
+
+Neu log hien `AI provider selected: openai` thi Render dang thieu `GEMINI_API_KEY` hoac chua deploy ban moi.

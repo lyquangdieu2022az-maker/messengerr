@@ -41,6 +41,7 @@ const config = {
   publicBaseUrl: process.env.PUBLIC_BASE_URL,
   voiceRepliesDefault: process.env.VOICE_REPLIES_DEFAULT === "true",
   setupMessengerProfileOnStart: process.env.SETUP_MESSENGER_PROFILE_ON_START !== "false",
+  setupMessengerGreetingOnStart: process.env.SETUP_MESSENGER_GREETING_ON_START === "true",
   botName: process.env.BOT_NAME || "Tro Ly Facebook AI"
 };
 
@@ -79,6 +80,7 @@ const ai = new AiClient({
   ttsVoice: process.env.OPENAI_TTS_VOICE,
   botName: config.botName
 });
+console.log(`AI provider selected: ${ai.provider}`);
 
 const facebook = new FacebookClient({
   pageAccessToken: config.pageAccessToken,
@@ -163,7 +165,7 @@ async function handleMessagingEvent(event) {
     }));
     await memoryStore.appendTurn(psid, text, answer);
 
-    const shouldSendVoice = memory.voiceReplies ?? config.voiceRepliesDefault;
+    const shouldSendVoice = (memory.voiceReplies ?? config.voiceRepliesDefault) && ai.canCreateSpeech();
     if (shouldSendVoice && config.publicBaseUrl) {
       try {
         const audioUrl = await ai.createSpeech({
@@ -259,6 +261,10 @@ async function extractUserText(event) {
   const audioAttachment = message?.attachments?.find((attachment) => attachment.type === "audio");
   const audioUrl = audioAttachment?.payload?.url;
   if (audioUrl) {
+    if (!ai.canTranscribeAudio()) {
+      return "Anh/Chị vừa gửi tin nhắn thoại, nhưng hiện bot đang dùng Gemini miễn phí nên em chưa nghe file audio được. Anh/Chị nhắn lại bằng chữ giúp em nhé.";
+    }
+
     return ai.transcribeAudioFromUrl(audioUrl);
   }
 
@@ -314,6 +320,15 @@ async function handleLocalCommand(psid, rawText) {
   }
 
   if (["bat giong noi", "voice on"].includes(normalized)) {
+    if (!ai.canCreateSpeech()) {
+      await memoryStore.setVoiceReplies(psid, false);
+      await facebook.sendText(
+        psid,
+        "Hiện bot đang dùng Gemini miễn phí nên em chưa gửi được giọng nói AI. Anh/Chị vẫn có thể chat bằng chữ bình thường. Nếu muốn bật voice, cần cấu hình thêm OPENAI_API_KEY."
+      );
+      return true;
+    }
+
     await memoryStore.setVoiceReplies(psid, true);
     await facebook.sendText(
       psid,
@@ -496,7 +511,8 @@ async function maybeSetupMessengerProfile() {
     const result = await setupMessengerProfile({
       pageAccessToken: config.pageAccessToken,
       graphVersion: config.graphVersion,
-      botName: config.botName
+      botName: config.botName,
+      setupGreeting: config.setupMessengerGreetingOnStart
     });
     console.log("Messenger profile configured:", result);
   } catch (error) {
