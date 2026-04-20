@@ -105,6 +105,7 @@ export function mainHelp(botName) {
     "",
     "Lệnh nhanh:",
     "- danh sách tác vụ: xem toàn bộ nhóm hỗ trợ",
+    "- báo cáo: tạo hồ sơ báo cáo/kháng nghị bán tự động",
     "- nhớ rằng <thông tin>: lưu ghi nhớ cho lần sau",
     "- quên tôi: xóa ghi nhớ của bạn",
     "- bật giọng nói / tắt giọng nói: bật hoặc tắt audio trả lời",
@@ -126,7 +127,8 @@ function taskMenu() {
     "7. Kiếm tiền: Stars, Reels, monetization, nội dung không đủ điều kiện.",
     "8. Soạn nội dung: báo cáo, kháng nghị, mô tả lỗi, tin nhắn trả khách, FAQ Page.",
     "",
-    "Bạn chỉ cần nhắn kiểu: “quảng cáo bị từ chối”, “page bị hạn chế”, “không nhận mã 2FA”, mình sẽ đi theo luồng phù hợp."
+    "Bạn chỉ cần nhắn kiểu: “quảng cáo bị từ chối”, “page bị hạn chế”, “không nhận mã 2FA”, mình sẽ đi theo luồng phù hợp.",
+    "Muốn tạo hồ sơ báo cáo có hỏi từng bước, nhắn: báo cáo."
   ].join("\n");
 }
 

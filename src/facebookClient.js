@@ -16,6 +16,59 @@ export class FacebookClient {
     }
   }
 
+  async sendQuickReplies(psid, text, quickReplies) {
+    const chunks = chunkText(text, 1900);
+    const lastChunk = chunks.pop();
+
+    for (const chunk of chunks) {
+      await this.sendText(psid, chunk);
+    }
+
+    await this.callSendApi({
+      recipient: { id: psid },
+      messaging_type: "RESPONSE",
+      message: {
+        text: lastChunk,
+        quick_replies: quickReplies.slice(0, 13).map((reply) => ({
+          content_type: "text",
+          title: reply.title.slice(0, 20),
+          payload: reply.payload
+        }))
+      }
+    });
+  }
+
+  async sendButtons(psid, text, buttons) {
+    await this.callSendApi({
+      recipient: { id: psid },
+      messaging_type: "RESPONSE",
+      message: {
+        attachment: {
+          type: "template",
+          payload: {
+            template_type: "button",
+            text: text.slice(0, 640),
+            buttons: buttons.slice(0, 3).map((button) => {
+              if (button.type === "web_url") {
+                return {
+                  type: "web_url",
+                  url: button.url,
+                  title: button.title.slice(0, 20)
+                };
+              }
+
+              return {
+                type: "postback",
+                title: button.title.slice(0, 20),
+                payload: button.payload
+              };
+            })
+          }
+        }
+      }
+    });
+  }
+
   async sendAudio(psid, audioUrl) {
     await this.callSendApi({
       recipient: { id: psid },

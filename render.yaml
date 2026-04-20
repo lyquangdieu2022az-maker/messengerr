@@ -12,10 +12,14 @@ services:
         value: 22.22.0
       - key: GRAPH_API_VERSION
         value: v25.0
+      - key: AI_PROVIDER
+        value: openai
       - key: OPENAI_MODEL
         value: gpt-5.4
       - key: OPENAI_FALLBACK_MODEL
         value: gpt-4o-mini
+      - key: OPENAI_PRIMARY_TIMEOUT_MS
+        value: "12000"
       - key: OPENAI_REASONING_EFFORT
         value: medium
       - key: OPENAI_TTS_MODEL
@@ -24,17 +28,21 @@ services:
         value: gpt-4o-mini-transcribe
       - key: OPENAI_TTS_VOICE
         value: marin
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash-lite
       - key: BOT_NAME
         value: Tro Ly Facebook AI
       - key: VOICE_REPLIES_DEFAULT
         value: "false"
       - key: AI_REPLY_TIMEOUT_MS
-        value: "15000"
+        value: "30000"
       - key: MAX_HISTORY_MESSAGES
         value: "16"
       - key: MAX_MEMORY_FACTS
         value: "40"
       - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
         sync: false
       - key: VERIFY_TOKEN
         sync: false
@@ -47,4 +55,6 @@ services:
       - key: PUBLIC_BASE_URL
         sync: false
       - key: MEMORY_FILE_PATH
+        sync: false
+      - key: REPORT_FILE_PATH
         sync: false

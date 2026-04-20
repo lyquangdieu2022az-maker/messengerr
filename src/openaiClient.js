@@ -5,9 +5,13 @@ import { buildDeveloperPrompt, buildMemoryContext } from "./prompt.js";
 
 export class AiClient {
   constructor(config) {
-    this.client = new OpenAI({ apiKey: config.apiKey });
+    this.provider = (config.provider || (config.geminiApiKey && !config.apiKey ? "gemini" : "openai")).toLowerCase();
+    this.client = config.apiKey ? new OpenAI({ apiKey: config.apiKey }) : null;
     this.model = config.model || "gpt-5.4";
     this.fallbackModel = config.fallbackModel || "gpt-4o-mini";
+    this.primaryTimeoutMs = Number(config.primaryTimeoutMs || 12000);
+    this.geminiApiKey = config.geminiApiKey;
+    this.geminiModel = config.geminiModel || "gemini-2.5-flash-lite";
     this.reasoningEffort = config.reasoningEffort || "medium";
     this.ttsModel = config.ttsModel || "gpt-4o-mini-tts";
     this.transcribeModel = config.transcribeModel || "gpt-4o-mini-transcribe";
@@ -16,6 +20,10 @@ export class AiClient {
   }
 
   async answer({ text, memory }) {
+    if (this.provider === "gemini") {
+      return this.answerWithGemini({ text, memory });
+    }
+
     const input = [
       {
         role: "developer",
@@ -41,6 +49,30 @@ export class AiClient {
   }
 
   async summarizeMemory({ memory, userText, assistantText }) {
+    if (this.provider === "gemini") {
+      const summary = await this.generateGeminiText([
+        {
+          role: "user",
+          parts: [
+            {
+              text: [
+                "Tóm tắt ngắn gọn bằng tiếng Việt có dấu các thông tin bền vững nên nhớ cho lần sau.",
+                "Không lưu bí mật, token, mật khẩu, mã 2FA, cookie hoặc giấy tờ nhạy cảm. Tối đa 120 từ.",
+                "",
+                `Tóm tắt cũ:\n${memory.summary || "(trống)"}`,
+                "",
+                `Tin nhắn mới của người dùng:\n${userText}`,
+                "",
+                `Câu trả lời của bot:\n${assistantText}`
+              ].join("\n")
+            }
+          ]
+        }
+      ]);
+
+      return summary || memory.summary || "";
+    }
+
     const response = await this.createResponseWithFallback(
       [
         {
@@ -59,12 +91,20 @@ export class AiClient {
   }
 
   async createResponseWithFallback(input, effort) {
+    if (!this.client) {
+      throw new Error("OPENAI_API_KEY is missing.");
+    }
+
     try {
-      return await this.client.responses.create({
-        model: this.model,
-        reasoning: { effort },
-        input
-      });
+      return await withTimeout(
+        this.client.responses.create({
+          model: this.model,
+          reasoning: { effort },
+          input
+        }),
+        this.primaryTimeoutMs,
+        `Primary OpenAI model timed out after ${this.primaryTimeoutMs}ms`
+      );
     } catch (error) {
       if (!this.fallbackModel || this.fallbackModel === this.model) {
         throw error;
@@ -76,6 +116,66 @@ export class AiClient {
         input
       });
     }
+  }
+
+  async answerWithGemini({ text, memory }) {
+    const contents = [
+      {
+        role: "user",
+        parts: [
+          {
+            text: [
+              buildDeveloperPrompt({ botName: this.botName }),
+              "",
+              buildMemoryContext(memory)
+            ].join("\n")
+          }
+        ]
+      },
+      ...memory.history.map((message) => ({
+        role: message.role === "assistant" ? "model" : "user",
+        parts: [{ text: message.content }]
+      })),
+      {
+        role: "user",
+        parts: [{ text }]
+      }
+    ];
+
+    const responseText = await this.generateGeminiText(contents);
+    return responseText || "Mình chưa tạo được câu trả lời. Bạn gửi lại giúp mình nhé.";
+  }
+
+  async generateGeminiText(contents) {
+    if (!this.geminiApiKey) {
+      throw new Error("GEMINI_API_KEY is missing.");
+    }
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(this.geminiModel)}:generateContent?key=${encodeURIComponent(this.geminiApiKey)}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents,
+        generationConfig: {
+          temperature: 0.45,
+          topP: 0.9
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Gemini API failed: ${response.status} ${errorBody}`);
+    }
+
+    const data = await response.json();
+    return (
+      data.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text || "")
+        .join("")
+        .trim() || ""
+    );
   }
 
   async transcribeAudioFromUrl(audioUrl) {
@@ -115,4 +215,13 @@ export class AiClient {
 
     return `${publicBaseUrl.replace(/\/$/, "")}/audio/${fileName}`;
   }
+}
+
+function withTimeout(promise, timeoutMs, message) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(message)), timeoutMs);
+    })
+  ]);
 }

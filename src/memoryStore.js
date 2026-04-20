@@ -6,6 +6,7 @@ const EMPTY_MEMORY = {
   summary: "",
   history: [],
   lastSupportTopic: "",
+  reportDraft: null,
   voiceReplies: null,
   updatedAt: null
 };
