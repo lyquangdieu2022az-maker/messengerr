@@ -79,6 +79,16 @@ const ai = new AiClient({
   geminiModel: process.env.GEMINI_MODEL,
   geminiFallbackModels: process.env.GEMINI_FALLBACK_MODELS,
   geminiMaxRetries: process.env.GEMINI_MAX_RETRIES,
+  llamaApiKey: process.env.LLAMA_API_KEY,
+  llamaBaseUrl: process.env.LLAMA_BASE_URL,
+  llamaModel: process.env.LLAMA_MODEL,
+  llamaFallbackModels: process.env.LLAMA_FALLBACK_MODELS,
+  llamaMaxRetries: process.env.LLAMA_MAX_RETRIES,
+  groqApiKey: process.env.GROQ_API_KEY,
+  openRouterApiKey: process.env.OPENROUTER_API_KEY,
+  openRouterSiteUrl: process.env.OPENROUTER_SITE_URL,
+  openRouterAppName: process.env.OPENROUTER_APP_NAME,
+  publicBaseUrl: config.publicBaseUrl,
   ttsVoice: process.env.OPENAI_TTS_VOICE,
   botName: config.botName
 });

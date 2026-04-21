@@ -4,7 +4,8 @@ const REPORT_TYPES = {
     menuTitle: "Giả mạo",
     keywords: ["gia mao", "mao danh", "fake", "fake acc", "fake page", "tai khoan gia", "page gia"],
     officialLinks: [
-      { title: "Hướng dẫn Meta", url: "https://www.facebook.com/help/174210519303259" }
+      { title: "Giả mạo", url: "https://www.facebook.com/help/174210519303259" },
+      { title: "Brand Rights", url: "https://www.facebook.com/business/tools/brand-rights-protection" }
     ],
     fields: [
       {
@@ -35,6 +36,7 @@ const REPORT_TYPES = {
     keywords: ["bi hack", "mat nick", "mat tai khoan", "bi chiem", "doi mat khau", "khong vao duoc nick"],
     officialLinks: [
       { title: "facebook.com/hacked", url: "https://www.facebook.com/hacked" },
+      { title: "Tìm tài khoản", url: "https://www.facebook.com/login/identify" },
       { title: "Security Checkup", url: "https://www.facebook.com/help/securitycheckup" }
     ],
     fields: [
@@ -66,7 +68,8 @@ const REPORT_TYPES = {
     keywords: ["bi khoa", "dang bi khoa", "khoa tai khoan", "vo hieu hoa", "disabled", "checkpoint", "link 956", "duoi 956"],
     officialLinks: [
       { title: "Tài khoản bị khóa", url: "https://www.facebook.com/help/669497174142663" },
-      { title: "Khôi phục tài khoản", url: "https://www.facebook.com/help/292105707596942/" }
+      { title: "Khôi phục", url: "https://www.facebook.com/help/292105707596942/" },
+      { title: "Support Inbox", url: "https://www.facebook.com/support/" }
     ],
     fields: [
       {
@@ -97,7 +100,8 @@ const REPORT_TYPES = {
     keywords: ["mat page", "mat fanpage", "page bi hack", "mat quyen page", "mat quyen quan tri", "admin page"],
     officialLinks: [
       { title: "Khôi phục Page", url: "https://www.facebook.com/help/738660629556925/" },
-      { title: "Business Settings", url: "https://business.facebook.com/settings/" }
+      { title: "Business Settings", url: "https://business.facebook.com/settings/" },
+      { title: "Business Support", url: "https://business.facebook.com/business-support-home/" }
     ],
     fields: [
       {
@@ -128,7 +132,8 @@ const REPORT_TYPES = {
     keywords: ["lua dao", "scam", "phishing", "link la", "tin nhan gia meta", "ban quyen gia", "meta support gia"],
     officialLinks: [
       { title: "Lừa đảo Facebook", url: "https://www.facebook.com/help/1674717642789671/" },
-      { title: "Security Checkup", url: "https://www.facebook.com/help/securitycheckup" }
+      { title: "Security Checkup", url: "https://www.facebook.com/help/securitycheckup" },
+      { title: "Privacy Checkup", url: "https://www.facebook.com/privacy/checkup/" }
     ],
     fields: [
       {
@@ -159,7 +164,8 @@ const REPORT_TYPES = {
     keywords: ["bao cao bai viet", "bao cao noi dung", "vi pham", "quay roi", "de doa", "ban quyen", "copyright", "noi dung xau"],
     officialLinks: [
       { title: "Chính sách Meta", url: "https://transparency.meta.com/policies/community-standards/" },
-      { title: "Trợ giúp Facebook", url: "https://www.facebook.com/help/" }
+      { title: "Copyright", url: "https://www.facebook.com/help/105418836216238/r.php/" },
+      { title: "Trademark", url: "https://www.facebook.com/help/507663689427413" }
     ],
     fields: [
       {
@@ -190,7 +196,8 @@ const REPORT_TYPES = {
     keywords: ["quang cao", "ads", "tkqc", "tai khoan quang cao", "ads manager", "tu choi quang cao", "han che quang cao"],
     officialLinks: [
       { title: "Account Quality", url: "https://www.facebook.com/accountquality/" },
-      { title: "Ads Manager", url: "https://www.facebook.com/adsmanager/" }
+      { title: "Ads Manager", url: "https://www.facebook.com/adsmanager/" },
+      { title: "Business Support", url: "https://business.facebook.com/business-support-home/" }
     ],
     fields: [
       {

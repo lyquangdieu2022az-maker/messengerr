@@ -3,23 +3,49 @@ const SUPPORT_LINKS = {
   policies: "https://transparency.meta.com/policies/community-standards/",
   accountQuality: "https://www.facebook.com/accountquality/",
   businessHelp: "https://www.facebook.com/business/help/",
+  businessSupportHome: "https://business.facebook.com/business-support-home/",
   businessSettings: "https://business.facebook.com/settings/",
   adsManager: "https://www.facebook.com/adsmanager/",
+  adsLibrary: "https://www.facebook.com/ads/library/",
   hackedAccount: "https://www.facebook.com/hacked",
   hackedPage: "https://www.facebook.com/help/738660629556925/",
   impersonation: "https://www.facebook.com/help/174210519303259",
   securityCheckup: "https://www.facebook.com/help/securitycheckup",
+  loginIdentify: "https://www.facebook.com/login/identify",
   twoFactor: "https://www.facebook.com/help/148233965247823",
   accountRecovery: "https://www.facebook.com/help/292105707596942/",
   lockedAccount: "https://www.facebook.com/help/669497174142663",
+  supportInbox: "https://www.facebook.com/support/",
+  accountStatus: "https://www.facebook.com/account_status",
+  reportProblem: "https://www.facebook.com/help/186570224871049",
   scams: "https://www.facebook.com/help/1674717642789671/",
   messengerIssue: "https://www.facebook.com/help/1723537124537415",
-  businessVerificationDocs: "https://www.facebook.com/help/243868559497297/"
+  businessVerificationDocs: "https://www.facebook.com/help/243868559497297/",
+  privacyCenter: "https://www.facebook.com/privacy/center/",
+  privacyCheckup: "https://www.facebook.com/privacy/checkup/",
+  copyright: "https://www.facebook.com/help/105418836216238/r.php/",
+  copyrightForm: "https://www.facebook.com/help/contact/634636770043106",
+  trademark: "https://www.facebook.com/help/507663689427413",
+  brandRightsProtection: "https://www.facebook.com/business/tools/brand-rights-protection",
+  commerceManager: "https://business.facebook.com/commerce/",
+  professionalDashboard: "https://www.facebook.com/professional_dashboard",
+  creatorsMonetization: "https://www.facebook.com/creators/tools/money",
+  metaAi: "https://www.meta.ai/",
+  llama: "https://www.llama.com/",
+  metaDevelopers: "https://developers.facebook.com/"
 };
 
 export function getFacebookFlowReply(normalizedText) {
+  if (hasAny(normalizedText, ["link ho tro", "duong link ho tro", "tong hop link", "link facebook", "link meta", "trung tam ho tro", "link chinh thuc"])) {
+    return supportLinksFlow();
+  }
+
   if (hasAny(normalizedText, ["ban lam duoc gi", "danh sach tac vu", "menu", "tac vu", "chuc nang"])) {
     return taskMenu();
+  }
+
+  if (hasAny(normalizedText, ["meta ai", "llama", "groq", "openrouter", "doi ai", "nha cung cap ai", "ai provider", "api meta", "meta api"])) {
+    return metaAiFlow();
   }
 
   if (hasAny(normalizedText, ["gia mao", "mao danh", "fake acc", "fake account", "report gia", "bao cao gia mao"])) {
@@ -102,9 +128,13 @@ export function mainHelp(botName) {
     "- đổi tên Page",
     "- báo cáo bài viết vi phạm",
     "- nghi ngờ link/tin nhắn lừa đảo",
+    "- link hỗ trợ chính thức của Facebook/Meta",
+    "- Meta AI/Llama dùng được không",
     "",
     "Lệnh nhanh:",
     "- danh sách tác vụ: xem toàn bộ nhóm hỗ trợ",
+    "- link hỗ trợ: xem danh sách link chính thức theo nhóm",
+    "- Meta AI: xem cách dùng Llama/Groq/OpenRouter hợp lệ cho bot",
     "- báo cáo: tạo hồ sơ báo cáo/kháng nghị bán tự động",
     "- nhớ rằng <thông tin>: lưu ghi nhớ cho lần sau",
     "- quên tôi: xóa ghi nhớ của Anh/Chị",
@@ -126,9 +156,84 @@ function taskMenu() {
     "6. Meta Business: Business Suite, Business Manager, Business Portfolio, xác minh doanh nghiệp, phân quyền.",
     "7. Kiếm tiền: Stars, Reels, monetization, nội dung không đủ điều kiện.",
     "8. Soạn nội dung: báo cáo, kháng nghị, mô tả lỗi, tin nhắn trả khách, FAQ Page.",
+    "9. Link chính thức: Help Center, Business Support, Account Quality, bản quyền, trademark, quyền riêng tư.",
+    "10. AI provider: Gemini miễn phí, Llama/Groq/OpenRouter, hoặc OpenAI nếu Anh/Chị có key.",
     "",
     "Anh/Chị chỉ cần nhắn kiểu: “quảng cáo bị từ chối”, “page bị hạn chế”, “không nhận mã 2FA”, em sẽ đi theo luồng phù hợp.",
-    "Muốn tạo hồ sơ báo cáo có hỏi từng bước, nhắn: báo cáo."
+    "Muốn tạo hồ sơ báo cáo có hỏi từng bước, nhắn: báo cáo.",
+    "Muốn xem toàn bộ link chính thức, nhắn: link hỗ trợ."
+  ].join("\n");
+}
+
+function metaAiFlow() {
+  return [
+    "Về Meta AI/Llama, em giải thích gọn cho Anh/Chị như này:",
+    "",
+    "1. Meta AI trong app Facebook/Messenger hiện không có API công khai để gắn trực tiếp vào bot Page như một tài khoản Meta AI chính thức.",
+    "2. Cách hợp lệ là dùng mô hình Llama hoặc endpoint AI tương thích OpenAI qua nhà cung cấp có API như Groq, OpenRouter hoặc endpoint Llama hợp lệ khác.",
+    "3. Bản bot này hỗ trợ sẵn các chế độ:",
+    "- AI_PROVIDER=gemini: chạy Gemini như hiện tại.",
+    "- AI_PROVIDER=groq: dùng Groq với model Llama nếu có GROQ_API_KEY.",
+    "- AI_PROVIDER=openrouter: dùng OpenRouter nếu có OPENROUTER_API_KEY.",
+    "- AI_PROVIDER=llama: dùng endpoint Llama/custom nếu có LLAMA_API_KEY, LLAMA_BASE_URL và LLAMA_MODEL.",
+    "",
+    "Link chính thức để Anh/Chị tham khảo:",
+    `- Meta AI: ${SUPPORT_LINKS.metaAi}`,
+    `- Llama: ${SUPPORT_LINKS.llama}`,
+    `- Meta for Developers: ${SUPPORT_LINKS.metaDevelopers}`,
+    "",
+    "Nếu Anh/Chị muốn miễn phí ổn định nhất trước mắt, cứ giữ Gemini. Khi có key Llama/Groq/OpenRouter, chỉ cần đổi biến môi trường, không phải sửa code."
+  ].join("\n");
+}
+
+function supportLinksFlow() {
+  return [
+    "Em gửi Anh/Chị bộ link hỗ trợ chính thức hay dùng của Facebook/Meta:",
+    "",
+    "1. Trung tâm chung",
+    `- Facebook Help Center: ${SUPPORT_LINKS.help}`,
+    `- Support Inbox/Hộp thư hỗ trợ: ${SUPPORT_LINKS.supportInbox}`,
+    `- Báo cáo sự cố Facebook: ${SUPPORT_LINKS.reportProblem}`,
+    `- Tiêu chuẩn cộng đồng Meta: ${SUPPORT_LINKS.policies}`,
+    "",
+    "2. Tài khoản và bảo mật",
+    `- Tài khoản bị hack: ${SUPPORT_LINKS.hackedAccount}`,
+    `- Tìm/khôi phục tài khoản: ${SUPPORT_LINKS.loginIdentify}`,
+    `- Khôi phục tài khoản: ${SUPPORT_LINKS.accountRecovery}`,
+    `- Tài khoản bị khóa/checkpoint: ${SUPPORT_LINKS.lockedAccount}`,
+    `- Security Checkup: ${SUPPORT_LINKS.securityCheckup}`,
+    `- Xác thực 2 yếu tố: ${SUPPORT_LINKS.twoFactor}`,
+    `- Trạng thái tài khoản: ${SUPPORT_LINKS.accountStatus}`,
+    "",
+    "3. Page, Business và quảng cáo",
+    `- Account Quality: ${SUPPORT_LINKS.accountQuality}`,
+    `- Meta Business Help Center: ${SUPPORT_LINKS.businessHelp}`,
+    `- Business Support Home: ${SUPPORT_LINKS.businessSupportHome}`,
+    `- Business Settings: ${SUPPORT_LINKS.businessSettings}`,
+    `- Ads Manager: ${SUPPORT_LINKS.adsManager}`,
+    `- Ads Library: ${SUPPORT_LINKS.adsLibrary}`,
+    `- Commerce Manager: ${SUPPORT_LINKS.commerceManager}`,
+    "",
+    "4. Báo cáo, bản quyền, thương hiệu",
+    `- Báo cáo giả mạo: ${SUPPORT_LINKS.impersonation}`,
+    `- Bản quyền/Copyright: ${SUPPORT_LINKS.copyright}`,
+    `- Form báo cáo copyright: ${SUPPORT_LINKS.copyrightForm}`,
+    `- Trademark/Nhãn hiệu: ${SUPPORT_LINKS.trademark}`,
+    `- Brand Rights Protection: ${SUPPORT_LINKS.brandRightsProtection}`,
+    `- Lừa đảo/phishing: ${SUPPORT_LINKS.scams}`,
+    "",
+    "5. Quyền riêng tư và kiếm tiền",
+    `- Privacy Center: ${SUPPORT_LINKS.privacyCenter}`,
+    `- Privacy Checkup: ${SUPPORT_LINKS.privacyCheckup}`,
+    `- Professional Dashboard: ${SUPPORT_LINKS.professionalDashboard}`,
+    `- Công cụ kiếm tiền cho creator: ${SUPPORT_LINKS.creatorsMonetization}`,
+    "",
+    "6. AI và developer",
+    `- Meta AI: ${SUPPORT_LINKS.metaAi}`,
+    `- Llama: ${SUPPORT_LINKS.llama}`,
+    `- Meta for Developers: ${SUPPORT_LINKS.metaDevelopers}`,
+    "",
+    "Lưu ý: Anh/Chị chỉ nên đăng nhập và gửi giấy tờ trên các trang chính thức facebook.com, business.facebook.com, meta.com. Không nhập mật khẩu/mã 2FA/token vào link lạ."
   ].join("\n");
 }
 
@@ -184,6 +289,7 @@ function loginAlertFlow() {
     "",
     `Công cụ chính thức: ${SUPPORT_LINKS.securityCheckup}`,
     `Nếu nghi bị hack: ${SUPPORT_LINKS.hackedAccount}`,
+    `Privacy Checkup: ${SUPPORT_LINKS.privacyCheckup}`,
     "",
     "Em không thể tự giám sát thiết bị đăng nhập cá nhân theo thời gian thực vì Facebook không mở API đó cho bot Page. Nhưng khi Anh/Chị nhận cảnh báo, gửi nội dung cảnh báo cho em, em sẽ hướng dẫn bước tiếp theo."
   ].join("\n");
@@ -194,10 +300,11 @@ function hackedAccountFlow() {
     "Luồng xử lý tài khoản Facebook bị hack:",
     "",
     `1. Mở công cụ khôi phục chính thức: ${SUPPORT_LINKS.hackedAccount}`,
-    "2. Dùng thiết bị và mạng Anh/Chị từng đăng nhập trước đây.",
-    "3. Nếu email/số điện thoại bị đổi, kiểm tra email cũ để tìm link đảo ngược thay đổi.",
-    "4. Sau khi vào lại được: đổi mật khẩu, bật 2FA, xóa thiết bị lạ, kiểm tra Page/Business/Ads.",
-    "5. Kiểm tra app/website đã liên kết và gỡ app lạ.",
+    `2. Nếu cần tìm tài khoản: ${SUPPORT_LINKS.loginIdentify}`,
+    "3. Dùng thiết bị và mạng Anh/Chị từng đăng nhập trước đây.",
+    "4. Nếu email/số điện thoại bị đổi, kiểm tra email cũ để tìm link đảo ngược thay đổi.",
+    "5. Sau khi vào lại được: đổi mật khẩu, bật 2FA, xóa thiết bị lạ, kiểm tra Page/Business/Ads.",
+    "6. Kiểm tra app/website đã liên kết và gỡ app lạ.",
     "",
     "Không gửi mật khẩu, mã 2FA, cookie hoặc token. Nếu ai đòi tiền/mã để mở khóa nhanh, hãy coi là lừa đảo."
   ].join("\n");
@@ -209,9 +316,10 @@ function hackedPageFlow() {
     "",
     `1. Mở hướng dẫn khôi phục Page chính thức: ${SUPPORT_LINKS.hackedPage}`,
     `2. Vào Business Settings nếu Page nằm trong Business: ${SUPPORT_LINKS.businessSettings}`,
-    "3. Chuẩn bị bằng chứng: link Page, vai trò quản trị trước đây, ảnh chụp email/thông báo thay đổi quyền, Business ID nếu có.",
-    "4. Kiểm tra người lạ, đối tác lạ, app lạ, tài khoản quảng cáo lạ trong Business.",
-    "5. Nếu tài khoản cá nhân admin cũng bị hack, xử lý tài khoản cá nhân trước.",
+    `3. Kiểm tra Business Support Home: ${SUPPORT_LINKS.businessSupportHome}`,
+    "4. Chuẩn bị bằng chứng: link Page, vai trò quản trị trước đây, ảnh chụp email/thông báo thay đổi quyền, Business ID nếu có.",
+    "5. Kiểm tra người lạ, đối tác lạ, app lạ, tài khoản quảng cáo lạ trong Business.",
+    "6. Nếu tài khoản cá nhân admin cũng bị hack, xử lý tài khoản cá nhân trước.",
     "",
     "Gửi em: Anh/Chị còn vào được tài khoản cá nhân không, còn thấy Page trong Business không, Page mất quyền từ lúc nào. Em sẽ viết checklist khôi phục sát hơn."
   ].join("\n");
@@ -223,9 +331,11 @@ function lockedAccountFlow() {
     "",
     `1. Kiểm tra luồng khôi phục tài khoản: ${SUPPORT_LINKS.accountRecovery}`,
     `2. Nếu Facebook báo tài khoản bị khóa: ${SUPPORT_LINKS.lockedAccount}`,
-    "3. Đăng nhập bằng thiết bị và mạng Anh/Chị từng dùng trước đây.",
-    "4. Làm theo màn hình xác minh danh tính nếu Facebook yêu cầu.",
-    "5. Không gửi giấy tờ tùy thân cho bot hoặc người lạ; chỉ gửi trong biểu mẫu chính thức của Facebook.",
+    `3. Tìm lại tài khoản: ${SUPPORT_LINKS.loginIdentify}`,
+    `4. Kiểm tra Support Inbox: ${SUPPORT_LINKS.supportInbox}`,
+    "5. Đăng nhập bằng thiết bị và mạng Anh/Chị từng dùng trước đây.",
+    "6. Làm theo màn hình xác minh danh tính nếu Facebook yêu cầu.",
+    "7. Không gửi giấy tờ tùy thân cho bot hoặc người lạ; chỉ gửi trong biểu mẫu chính thức của Facebook.",
     "",
     "Anh/Chị gửi em nguyên văn thông báo Facebook đang hiện, em sẽ giải thích và chỉ bước tiếp theo."
   ].join("\n");
@@ -236,10 +346,11 @@ function pageQualityFlow() {
     "Luồng xử lý Page bị hạn chế, cảnh báo hoặc vi phạm:",
     "",
     `1. Vào Account Quality/Chất lượng tài khoản: ${SUPPORT_LINKS.accountQuality}`,
-    "2. Chọn Page đang bị cảnh báo để xem lỗi cụ thể.",
-    "3. Xác định loại lỗi: nội dung bị gỡ, spam, mạo danh, bản quyền, lừa đảo, chính sách thương mại hoặc tiêu chuẩn cộng đồng.",
-    "4. Nếu có nút Yêu cầu xem xét/Kháng nghị, hãy chuẩn bị nội dung ngắn gọn, lịch sự và có bằng chứng.",
-    "5. Gỡ hoặc sửa các bài có nguy cơ lặp lại lỗi; kiểm tra quyền admin xem có người lạ đăng bài không.",
+    `2. Kiểm tra Support Inbox nếu có thông báo: ${SUPPORT_LINKS.supportInbox}`,
+    "3. Chọn Page đang bị cảnh báo để xem lỗi cụ thể.",
+    "4. Xác định loại lỗi: nội dung bị gỡ, spam, mạo danh, bản quyền, lừa đảo, chính sách thương mại hoặc tiêu chuẩn cộng đồng.",
+    "5. Nếu có nút Yêu cầu xem xét/Kháng nghị, hãy chuẩn bị nội dung ngắn gọn, lịch sự và có bằng chứng.",
+    "6. Gỡ hoặc sửa các bài có nguy cơ lặp lại lỗi; kiểm tra quyền admin xem có người lạ đăng bài không.",
     "",
     `Tiêu chuẩn cộng đồng Meta: ${SUPPORT_LINKS.policies}`,
     "",
@@ -253,9 +364,11 @@ function adsFlow() {
     "",
     `1. Vào Ads Manager: ${SUPPORT_LINKS.adsManager}`,
     `2. Vào Account Quality để xem lý do hạn chế/từ chối: ${SUPPORT_LINKS.accountQuality}`,
-    "3. Nếu quảng cáo bị từ chối: kiểm tra nội dung, ảnh, landing page, tuyên bố gây hiểu nhầm, trước/sau, sức khỏe, tài chính, cam kết kết quả.",
-    "4. Nếu tài khoản quảng cáo bị hạn chế: kiểm tra danh tính, phương thức thanh toán, quyền Business, lịch sử vi phạm.",
-    "5. Nếu có nút Yêu cầu xem xét, gửi kháng nghị ngắn gọn và đúng trọng tâm.",
+    `3. Mở Business Support Home nếu cần ticket hỗ trợ: ${SUPPORT_LINKS.businessSupportHome}`,
+    `4. Kiểm tra Ads Library để so sánh quảng cáo đang chạy: ${SUPPORT_LINKS.adsLibrary}`,
+    "5. Nếu quảng cáo bị từ chối: kiểm tra nội dung, ảnh, landing page, tuyên bố gây hiểu nhầm, trước/sau, sức khỏe, tài chính, cam kết kết quả.",
+    "6. Nếu tài khoản quảng cáo bị hạn chế: kiểm tra danh tính, phương thức thanh toán, quyền Business, lịch sử vi phạm.",
+    "7. Nếu có nút Yêu cầu xem xét, gửi kháng nghị ngắn gọn và đúng trọng tâm.",
     "",
     "Mẫu kháng nghị:",
     "Chúng tôi tin rằng quảng cáo/tài khoản này bị đánh giá nhầm. Nội dung tuân thủ chính sách Meta, không gây hiểu nhầm và không né tránh hệ thống xét duyệt. Vui lòng xem xét lại.",
@@ -269,10 +382,11 @@ function businessVerificationFlow() {
     "Luồng xử lý Meta Business Suite/Business Manager/xác minh doanh nghiệp:",
     "",
     `1. Vào Business Settings: ${SUPPORT_LINKS.businessSettings}`,
-    "2. Kiểm tra Business Info: tên pháp lý, địa chỉ, website, số điện thoại, email doanh nghiệp.",
-    "3. Kiểm tra Security Center xem có yêu cầu bật 2FA hoặc xác minh không.",
-    "4. Chuẩn bị giấy tờ trùng thông tin doanh nghiệp: đăng ký kinh doanh, hóa đơn/giấy tờ địa chỉ, website có tên doanh nghiệp.",
-    "5. Nếu bị từ chối, so sánh từng trường thông tin trên giấy tờ với thông tin trong Business.",
+    `2. Mở Business Support Home: ${SUPPORT_LINKS.businessSupportHome}`,
+    "3. Kiểm tra Business Info: tên pháp lý, địa chỉ, website, số điện thoại, email doanh nghiệp.",
+    "4. Kiểm tra Security Center xem có yêu cầu bật 2FA hoặc xác minh không.",
+    "5. Chuẩn bị giấy tờ trùng thông tin doanh nghiệp: đăng ký kinh doanh, hóa đơn/giấy tờ địa chỉ, website có tên doanh nghiệp.",
+    "6. Nếu bị từ chối, so sánh từng trường thông tin trên giấy tờ với thông tin trong Business.",
     "",
     `Tài liệu xác minh doanh nghiệp Facebook: ${SUPPORT_LINKS.businessVerificationDocs}`,
     `Trung tâm hỗ trợ doanh nghiệp: ${SUPPORT_LINKS.businessHelp}`,
@@ -302,10 +416,11 @@ function adminAccessFlow() {
     "Luồng xử lý quyền quản trị Page/Business:",
     "",
     `1. Vào Business Settings: ${SUPPORT_LINKS.businessSettings}`,
-    "2. Kiểm tra People/Người dùng, Partners/Đối tác, Pages/Tài sản.",
-    "3. Gỡ người lạ hoặc đối tác lạ nếu Anh/Chị còn quyền quản trị hợp lệ.",
-    "4. Bật 2FA bắt buộc cho người quản lý Business nếu có tùy chọn.",
-    "5. Nếu Anh/Chị bị mất quyền, thu thập bằng chứng quyền cũ, email thông báo, link Page, Business ID.",
+    `2. Kiểm tra Business Support Home nếu bị mất quyền hoặc có ticket: ${SUPPORT_LINKS.businessSupportHome}`,
+    "3. Kiểm tra People/Người dùng, Partners/Đối tác, Pages/Tài sản.",
+    "4. Gỡ người lạ hoặc đối tác lạ nếu Anh/Chị còn quyền quản trị hợp lệ.",
+    "5. Bật 2FA bắt buộc cho người quản lý Business nếu có tùy chọn.",
+    "6. Nếu Anh/Chị bị mất quyền, thu thập bằng chứng quyền cũ, email thông báo, link Page, Business ID.",
     "",
     "Không thêm admin lạ, không cấp toàn quyền cho người hỗ trợ không đáng tin. Nếu cần phân quyền, hãy cấp mức thấp nhất đủ dùng."
   ].join("\n");
@@ -336,6 +451,8 @@ function contentReportFlow() {
     "5. Nếu liên quan tài khoản/Page của Anh/Chị, ghi rõ tác động và bằng chứng sở hữu.",
     "",
     `Tiêu chuẩn cộng đồng: ${SUPPORT_LINKS.policies}`,
+    `Bản quyền/Copyright: ${SUPPORT_LINKS.copyright}`,
+    `Trademark/Nhãn hiệu: ${SUPPORT_LINKS.trademark}`,
     "",
     "Gửi em nội dung hoặc mô tả vi phạm, em sẽ giúp chọn lý do báo cáo và viết mô tả ngắn gọn."
   ].join("\n");
@@ -356,6 +473,7 @@ function scamFlow() {
     "3. Báo cáo tài khoản/tin nhắn đó trong Facebook.",
     "4. Đổi mật khẩu và bật 2FA nếu đã lỡ bấm link.",
     `5. Đọc hướng dẫn chính thức: ${SUPPORT_LINKS.scams}`,
+    `6. Chạy Privacy Checkup: ${SUPPORT_LINKS.privacyCheckup}`,
     "",
     "Anh/Chị có thể gửi nội dung tin nhắn đáng ngờ, em sẽ giúp phân tích có phải lừa đảo không."
   ].join("\n");
@@ -372,6 +490,8 @@ function monetizationFlow() {
     "5. Nếu có nút kháng nghị, mô tả ngắn gọn vì sao nội dung là nguyên gốc và tuân thủ chính sách.",
     "",
     `Kiểm tra Account Quality trước: ${SUPPORT_LINKS.accountQuality}`,
+    `Professional Dashboard: ${SUPPORT_LINKS.professionalDashboard}`,
+    `Công cụ kiếm tiền cho creator: ${SUPPORT_LINKS.creatorsMonetization}`,
     "",
     "Gửi em thông báo không đủ điều kiện, em sẽ phân tích lý do và viết checklist sửa."
   ].join("\n");

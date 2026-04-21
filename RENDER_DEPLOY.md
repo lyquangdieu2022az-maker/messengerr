@@ -51,6 +51,42 @@ REPORT_FILE_PATH=
 
 Khi dung Gemini, phan chat chu co the chay theo free tier cua Google. Neu khong co OpenAI key, bot se tu bo qua voice/audio de tranh loi.
 
+## Neu muon dung Llama / Meta-style AI
+
+Meta AI trong Facebook/Messenger hien khong co API cong khai de gan truc tiep vao Page bot. Ban moi nay da them cach hop le: dung Llama qua provider co API.
+
+Chon mot trong cac cau hinh sau tren Render:
+
+```text
+AI_PROVIDER=groq
+GROQ_API_KEY=key_cua_groq
+LLAMA_MODEL=llama-3.3-70b-versatile
+LLAMA_MAX_RETRIES=1
+```
+
+Hoac:
+
+```text
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=key_cua_openrouter
+LLAMA_MODEL=meta-llama/llama-3.3-70b-instruct
+OPENROUTER_SITE_URL=https://facebook-ai-support-bot.onrender.com
+OPENROUTER_APP_NAME=Tro Ly Facebook AI
+LLAMA_MAX_RETRIES=1
+```
+
+Hoac neu provider cua ban dua endpoint OpenAI-compatible rieng:
+
+```text
+AI_PROVIDER=llama
+LLAMA_API_KEY=key_cua_provider
+LLAMA_BASE_URL=https://provider.example.com/openai/v1
+LLAMA_MODEL=ten_model_llama
+LLAMA_MAX_RETRIES=1
+```
+
+Neu chua co key Groq/OpenRouter/Llama, cu giu `AI_PROVIDER=gemini`.
+
 Neu dung Render free plan, co the de trong:
 
 ```text

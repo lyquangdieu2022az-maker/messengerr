@@ -5,11 +5,23 @@ import { buildDeveloperPrompt, buildMemoryContext } from "./prompt.js";
 
 export class AiClient {
   constructor(config) {
-    const requestedProvider = (config.provider || "").trim().toLowerCase();
+    const requestedProvider = normalizeProvider(config.provider);
     this.client = config.apiKey ? new OpenAI({ apiKey: config.apiKey }) : null;
     this.geminiApiKey = config.geminiApiKey;
-    this.provider = requestedProvider || (this.geminiApiKey && !this.client ? "gemini" : "openai");
-    if (this.provider !== "gemini" && !this.client && this.geminiApiKey) {
+    this.compatibleProvider = isOpenAiCompatibleProvider(requestedProvider)
+      ? requestedProvider
+      : inferCompatibleProvider(config);
+    this.compatibleApiKey = getCompatibleApiKey(this.compatibleProvider, config);
+    this.compatibleBaseUrl = getCompatibleBaseUrl(this.compatibleProvider, config);
+    this.compatibleClient = this.compatibleApiKey
+      ? new OpenAI({
+          apiKey: this.compatibleApiKey,
+          baseURL: this.compatibleBaseUrl,
+          defaultHeaders: buildCompatibleHeaders(this.compatibleProvider, config)
+        })
+      : null;
+    this.provider = requestedProvider || (this.geminiApiKey ? "gemini" : this.compatibleClient ? this.compatibleProvider : "openai");
+    if (this.provider === "openai" && !this.client && this.geminiApiKey) {
       console.warn("OPENAI_API_KEY is missing, switching AI provider to Gemini.");
       this.provider = "gemini";
     }
@@ -19,6 +31,9 @@ export class AiClient {
     this.geminiModel = config.geminiModel || "gemini-2.5-flash-lite";
     this.geminiFallbackModels = parseCsv(config.geminiFallbackModels || "gemini-2.5-flash");
     this.geminiMaxRetries = Number(config.geminiMaxRetries || 1);
+    this.compatibleModel = config.llamaModel || getDefaultCompatibleModel(this.compatibleProvider);
+    this.compatibleFallbackModels = parseCsv(config.llamaFallbackModels || "");
+    this.compatibleMaxRetries = Number(config.llamaMaxRetries || 1);
     this.reasoningEffort = config.reasoningEffort || "medium";
     this.ttsModel = config.ttsModel || "gpt-4o-mini-tts";
     this.transcribeModel = config.transcribeModel || "gpt-4o-mini-transcribe";
@@ -29,6 +44,10 @@ export class AiClient {
   async answer({ text, memory }) {
     if (this.provider === "gemini") {
       return this.answerWithGemini({ text, memory });
+    }
+
+    if (isOpenAiCompatibleProvider(this.provider)) {
+      return this.answerWithCompatibleProvider({ text, memory });
     }
 
     const input = [
@@ -74,6 +93,21 @@ export class AiClient {
               ].join("\n")
             }
           ]
+        }
+      ]);
+
+      return summary || memory.summary || "";
+    }
+
+    if (isOpenAiCompatibleProvider(this.provider)) {
+      const summary = await this.generateCompatibleText([
+        {
+          role: "system",
+          content: "Tóm tắt ngắn gọn bằng tiếng Việt có dấu các thông tin bền vững nên nhớ cho lần sau. Không lưu bí mật, token, mật khẩu, mã 2FA, cookie hoặc giấy tờ nhạy cảm. Tối đa 120 từ."
+        },
+        {
+          role: "user",
+          content: `Tóm tắt cũ:\n${memory.summary || "(trống)"}\n\nTin nhắn mới của người dùng:\n${userText}\n\nCâu trả lời của bot:\n${assistantText}`
         }
       ]);
 
@@ -216,6 +250,74 @@ export class AiClient {
     );
   }
 
+  async answerWithCompatibleProvider({ text, memory }) {
+    const messages = [
+      {
+        role: "system",
+        content: [
+          buildDeveloperPrompt({ botName: this.botName }),
+          "",
+          buildMemoryContext(memory)
+        ].join("\n")
+      },
+      ...memory.history.map((message) => ({
+        role: message.role === "assistant" ? "assistant" : "user",
+        content: message.content
+      })),
+      {
+        role: "user",
+        content: text
+      }
+    ];
+
+    const responseText = await this.generateCompatibleText(messages);
+    return responseText || "Em chưa tạo được câu trả lời. Anh/Chị gửi lại giúp em nhé.";
+  }
+
+  async generateCompatibleText(messages) {
+    if (!this.compatibleClient) {
+      throw new Error(`${this.provider.toUpperCase()} API key is missing.`);
+    }
+
+    const models = [this.compatibleModel, ...this.compatibleFallbackModels].filter(
+      (model, index, all) => model && all.indexOf(model) === index
+    );
+    let lastError = null;
+
+    for (const model of models) {
+      for (let attempt = 0; attempt <= this.compatibleMaxRetries; attempt += 1) {
+        try {
+          return await this.callCompatibleModel({ model, messages });
+        } catch (error) {
+          lastError = error;
+          const canRetry = isRetryableProviderError(error) && attempt < this.compatibleMaxRetries;
+          if (!canRetry) break;
+
+          const delayMs = 700 * (attempt + 1);
+          console.warn(`${this.provider} model ${model} failed temporarily, retrying in ${delayMs}ms:`, error.message);
+          await sleep(delayMs);
+        }
+      }
+
+      if (models.length > 1) {
+        console.warn(`${this.provider} model ${model} failed, trying fallback model if available:`, lastError?.message);
+      }
+    }
+
+    throw lastError || new Error(`${this.provider} API failed.`);
+  }
+
+  async callCompatibleModel({ model, messages }) {
+    const response = await this.compatibleClient.chat.completions.create({
+      model,
+      messages,
+      temperature: 0.45,
+      top_p: 0.9
+    });
+
+    return response.choices?.[0]?.message?.content?.trim() || "";
+  }
+
   async transcribeAudioFromUrl(audioUrl) {
     if (!this.client) {
       throw new Error("OPENAI_API_KEY is required for Messenger audio transcription.");
@@ -271,6 +373,59 @@ export class AiClient {
   }
 }
 
+function normalizeProvider(provider) {
+  const value = String(provider || "").trim().toLowerCase();
+  if (!value) return "";
+  if (["google", "google-ai", "google_ai"].includes(value)) return "gemini";
+  if (["meta", "meta-ai", "meta_ai", "llama", "llama-api", "llama_api"].includes(value)) return "llama";
+  if (["open-router", "open_router"].includes(value)) return "openrouter";
+  if (["groq", "openrouter", "openai", "gemini"].includes(value)) return value;
+  return value;
+}
+
+function isOpenAiCompatibleProvider(provider) {
+  return ["llama", "groq", "openrouter"].includes(provider);
+}
+
+function inferCompatibleProvider(config) {
+  if (config.groqApiKey) return "groq";
+  if (config.openRouterApiKey) return "openrouter";
+  if (config.llamaApiKey) return "llama";
+  return "llama";
+}
+
+function getCompatibleApiKey(provider, config) {
+  if (provider === "groq") return config.groqApiKey || config.llamaApiKey || "";
+  if (provider === "openrouter") return config.openRouterApiKey || config.llamaApiKey || "";
+  return config.llamaApiKey || config.groqApiKey || config.openRouterApiKey || "";
+}
+
+function getCompatibleBaseUrl(provider, config) {
+  if (config.llamaBaseUrl) return config.llamaBaseUrl;
+  if (provider === "openrouter") return "https://openrouter.ai/api/v1";
+  if (provider === "groq") return "https://api.groq.com/openai/v1";
+  if (config.openRouterApiKey) return "https://openrouter.ai/api/v1";
+  return "https://api.groq.com/openai/v1";
+}
+
+function getDefaultCompatibleModel(provider) {
+  if (provider === "openrouter") return "meta-llama/llama-3.3-70b-instruct";
+  return "llama-3.3-70b-versatile";
+}
+
+function buildCompatibleHeaders(provider, config) {
+  if (provider !== "openrouter") return undefined;
+
+  const headers = {};
+  const siteUrl = config.openRouterSiteUrl || config.publicBaseUrl;
+  const appName = config.openRouterAppName || config.botName;
+
+  if (siteUrl) headers["HTTP-Referer"] = siteUrl;
+  if (appName) headers["X-Title"] = appName;
+
+  return Object.keys(headers).length ? headers : undefined;
+}
+
 function parseCsv(value) {
   return String(value || "")
     .split(",")
@@ -280,6 +435,10 @@ function parseCsv(value) {
 
 function isRetryableGeminiError(error) {
   return [500, 502, 503, 504].includes(error.status);
+}
+
+function isRetryableProviderError(error) {
+  return [408, 409, 429, 500, 502, 503, 504].includes(error.status);
 }
 
 function sleep(ms) {

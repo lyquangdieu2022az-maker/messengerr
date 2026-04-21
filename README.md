@@ -2,14 +2,21 @@
 
 Bot Messenger dung Gemini de tra loi co logic, nho ngu canh theo tung nguoi dung va ho tro Facebook/Meta. Bot van co the tro chuyen tu nhien ve chu de khac nhu nau an, vui choi, hoc tap, cong viec, viet noi dung va tam su.
 
+## Ban v17
+
+Ban nay giu day du tinh nang v16 va them lop AI provider moi de co the dung Llama/Groq/OpenRouter khi Anh/Chi co key. Neu khong co key khac, cu giu Gemini nhu hien tai.
+
 ## Tinh nang
 
 - Webhook Facebook Messenger: xac minh `GET /webhook`, nhan tin nhan `POST /webhook`.
 - AI tra loi bang Gemini voi model mac dinh `gemini-2.5-flash-lite`.
+- Tuy chon doi AI provider: `gemini`, `groq`, `openrouter`, `llama`, `openai`.
+- Ho tro Llama/Meta-style AI qua API hop le nhu Groq, OpenRouter hoac endpoint OpenAI-compatible tuy chinh. Bot khong tu nhan la Meta AI chinh thuc.
 - Tro chuyen da nang: hoi Facebook thi xu ly chuyen sau, hoi chuyen khac thi tra loi dung chu de.
 - Tro ly tao bao cao/khang nghi ban tu dong: hoi tung thong tin, soan san noi dung, gui link chinh thuc de nguoi dung tu bam gui.
 - Tao trang ban soan tren Render co nut copy noi dung va nut mo link chinh thuc cua Meta/Facebook.
-- Tu cai menu co dinh trong Messenger: Hoi AI, Ho tro Facebook, Tao bao cao, Tro giup.
+- Lenh `link ho tro` gui bo link chinh thuc theo nhom: bao mat, Account Quality, Business Support, Ads, ban quyen, trademark, privacy, creator.
+- Tu cai menu co dinh trong Messenger: Hoi AI, Tao bao cao, Tro giup.
 - Giong tra loi lich su: bot xung em va goi nguoi can ho tro la Anh/Chi.
 - Bo nho hoi thoai theo PSID trong `data/memory.json`.
 - Lenh luu/xoa ghi nho: `nho rang ...`, `quen toi`.
@@ -30,6 +37,7 @@ Dien cac bien trong `.env`:
 - `AI_PROVIDER`: dat `gemini`.
 - `GEMINI_API_KEY`: API key Gemini lay tu Google AI Studio.
 - `GEMINI_MODEL`: model Gemini, mac dinh `gemini-2.5-flash-lite`.
+- Neu muon dung Llama/Groq/OpenRouter: doi `AI_PROVIDER` va them key tuong ung, xem muc "Tuy chon Llama / Meta-style AI".
 - `VERIFY_TOKEN`: chuoi ban tu dat, phai giong trong Meta Developer Dashboard.
 - `PAGE_ACCESS_TOKEN`: Page access token cua Facebook Page.
 - `PAGE_ID`: ID cua Page. Neu endpoint Page-specific loi, co the bo trong de dung `/me/messages`.
@@ -83,6 +91,7 @@ Verify token trong Meta phai trung `VERIFY_TOKEN`.
 
 - `help`: xem huong dan nhanh.
 - `bao cao`: mo menu tao ho so bao cao/khang nghi ban tu dong.
+- `link ho tro`: xem cac link chinh thuc cua Facebook/Meta theo nhom.
 - `bao cao gia mao`: tao ho so bao cao tai khoan/Page gia mao.
 - `khang nghi tai khoan bi khoa`: tao noi dung khang nghi tai khoan bi khoa/checkpoint.
 - `nho rang shop cua toi ban my pham`: luu thong tin vao bo nho.
@@ -139,3 +148,39 @@ AI provider selected: gemini
 ```
 
 Neu log hien `AI provider selected: openai` thi Render dang thieu `GEMINI_API_KEY` hoac chua deploy ban moi.
+
+## Tuy chon Llama / Meta-style AI
+
+Meta AI trong app Facebook/Messenger khong co API cong khai de gan truc tiep vao bot Page nhu mot tai khoan Meta AI chinh thuc. Cach hop le la dung Llama hoac mot endpoint AI tuong thich OpenAI.
+
+Dung Groq:
+
+```env
+AI_PROVIDER=groq
+GROQ_API_KEY=key_cua_groq
+LLAMA_MODEL=llama-3.3-70b-versatile
+LLAMA_MAX_RETRIES=1
+```
+
+Dung OpenRouter:
+
+```env
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=key_cua_openrouter
+LLAMA_MODEL=meta-llama/llama-3.3-70b-instruct
+OPENROUTER_SITE_URL=https://facebook-ai-support-bot.onrender.com
+OPENROUTER_APP_NAME=Tro Ly Facebook AI
+LLAMA_MAX_RETRIES=1
+```
+
+Dung endpoint Llama/custom OpenAI-compatible:
+
+```env
+AI_PROVIDER=llama
+LLAMA_API_KEY=key_cua_provider
+LLAMA_BASE_URL=https://provider.example.com/openai/v1
+LLAMA_MODEL=ten_model_llama
+LLAMA_MAX_RETRIES=1
+```
+
+Neu chua co cac key tren, giu `AI_PROVIDER=gemini` la on nhat cho ban mien phi.

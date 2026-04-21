@@ -20,6 +20,8 @@ services:
         value: gemini-2.5-flash
       - key: GEMINI_MAX_RETRIES
         value: "1"
+      - key: LLAMA_MAX_RETRIES
+        value: "1"
       - key: BOT_NAME
         value: Tro Ly Facebook AI
       - key: VOICE_REPLIES_DEFAULT
@@ -35,6 +37,22 @@ services:
       - key: MAX_MEMORY_FACTS
         value: "40"
       - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_SITE_URL
+        sync: false
+      - key: OPENROUTER_APP_NAME
+        sync: false
+      - key: LLAMA_API_KEY
+        sync: false
+      - key: LLAMA_BASE_URL
+        sync: false
+      - key: LLAMA_MODEL
+        sync: false
+      - key: LLAMA_FALLBACK_MODELS
         sync: false
       - key: VERIFY_TOKEN
         sync: false
