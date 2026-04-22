@@ -47,6 +47,7 @@ AI_REPLY_TIMEOUT_MS=30000
 MAX_HISTORY_MESSAGES=16
 MAX_MEMORY_FACTS=40
 REPORT_FILE_PATH=
+AUTOMATION_FILE_PATH=
 ```
 
 Khi dung Gemini, phan chat chu co the chay theo free tier cua Google. Neu khong co OpenAI key, bot se tu bo qua voice/audio de tranh loi.
@@ -101,6 +102,45 @@ REPORT_FILE_PATH=/var/data/reports.json
 ```
 
 `PUBLIC_BASE_URL` nen dung dung URL Render cua ban. Bien nay giup bot tao nut "Mo ban soan" de nguoi dung copy noi dung bao cao/khieu nai tren trang rieng cua bot.
+
+## Bat tu dong dang bai va rep binh luan
+
+Mac dinh ban moi de tat de bot khong tu dang khi ban chua san sang:
+
+```text
+AUTO_POST_ENABLED=false
+COMMENT_AUTO_REPLY_ENABLED=false
+```
+
+Khi Meta app da co quyen, doi thanh:
+
+```text
+AUTO_POST_ENABLED=true
+AUTO_POST_TIMES=08:00,12:00,16:00
+AUTO_POST_UTC_OFFSET_MINUTES=420
+AUTO_POST_CATCH_UP_MINUTES=90
+AUTO_POST_CHECK_INTERVAL_MS=300000
+COMMENT_AUTO_REPLY_ENABLED=true
+COMMENT_REPLY_TTL_DAYS=14
+```
+
+Y nghia:
+
+- `AUTO_POST_TIMES=08:00,12:00,16:00`: 1 ngay 3 bai, cach nhau 4 tieng theo gio Viet Nam.
+- `AUTO_POST_UTC_OFFSET_MINUTES=420`: mui gio Viet Nam UTC+7.
+- `AUTO_POST_CATCH_UP_MINUTES=90`: neu server ngu qua khung gio qua lau thi bo qua, tranh dang don nhieu bai.
+- `COMMENT_AUTO_REPLY_ENABLED=true`: bot tu rep binh luan Page nhan qua webhook `feed`.
+
+Can bat trong Meta:
+
+```text
+pages_manage_posts
+pages_read_engagement
+pages_manage_engagement
+Webhook field: feed
+```
+
+Luu y: app co the can App Review cua Meta neu muon dung cho nguoi dung ngoai admin/developer/tester.
 
 ## Gan vao Meta/Facebook
 

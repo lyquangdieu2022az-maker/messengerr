@@ -7,7 +7,13 @@ import { AiClient } from "./openaiClient.js";
 import { FacebookClient } from "./facebookClient.js";
 import { getFacebookFlowReply, mainHelp } from "./facebookFlows.js";
 import { MENU_PAYLOADS, setupMessengerProfile } from "./messengerProfile.js";
+import { AutomationStore } from "./automationStore.js";
 import { MemoryStore } from "./memoryStore.js";
+import {
+  buildPageAutomationConfig,
+  handlePageFeedChange,
+  startPageAutomation
+} from "./pageAutomation.js";
 import { ReportStore } from "./reportStore.js";
 import {
   advanceReportDraft,
@@ -59,12 +65,17 @@ app.use(
 
 const memoryFilePath = process.env.MEMORY_FILE_PATH || path.join(rootDir, "data", "memory.json");
 const reportFilePath = process.env.REPORT_FILE_PATH || path.join(rootDir, "data", "reports.json");
+const automationFilePath = process.env.AUTOMATION_FILE_PATH || path.join(rootDir, "data", "automation.json");
 
 const memoryStore = new MemoryStore(memoryFilePath, {
   maxHistoryMessages: process.env.MAX_HISTORY_MESSAGES,
   maxFacts: process.env.MAX_MEMORY_FACTS
 });
 const reportStore = new ReportStore(reportFilePath);
+const automationStore = new AutomationStore(automationFilePath, {
+  commentTtlDays: process.env.COMMENT_REPLY_TTL_DAYS
+});
+const pageAutomationConfig = buildPageAutomationConfig(process.env);
 
 const ai = new AiClient({
   provider: process.env.AI_PROVIDER,
@@ -104,7 +115,12 @@ app.get("/", (_req, res) => {
   res.json({
     ok: true,
     name: config.botName,
-    webhook: "/webhook"
+    webhook: "/webhook",
+    automation: {
+      autoPostEnabled: pageAutomationConfig.autoPostEnabled,
+      autoPostTimes: pageAutomationConfig.autoPostTimes,
+      commentAutoReplyEnabled: pageAutomationConfig.commentAutoReplyEnabled
+    }
   });
 });
 
@@ -142,6 +158,18 @@ app.post("/webhook", async (req, res) => {
     for (const event of entry.messaging || []) {
       handleMessagingEvent(event).catch((error) => {
         console.error("Messaging event failed:", error);
+      });
+    }
+
+    for (const change of entry.changes || []) {
+      handlePageFeedChange({
+        change,
+        ai,
+        facebook,
+        store: automationStore,
+        config: pageAutomationConfig
+      }).catch((error) => {
+        console.error("Page feed change failed:", error);
       });
     }
   }
@@ -509,10 +537,18 @@ function normalizeCommand(text) {
 memoryStore.init().then(() => {
   return reportStore.init();
 }).then(() => {
+  return automationStore.init();
+}).then(() => {
   return maybeSetupMessengerProfile();
 }).then(() => {
   app.listen(config.port, () => {
     console.log(`${config.botName} is running on http://localhost:${config.port}`);
+    startPageAutomation({
+      ai,
+      facebook,
+      store: automationStore,
+      config: pageAutomationConfig
+    });
   });
 });
 

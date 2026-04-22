@@ -36,6 +36,22 @@ services:
         value: "16"
       - key: MAX_MEMORY_FACTS
         value: "40"
+      - key: AUTO_POST_ENABLED
+        value: "false"
+      - key: AUTO_POST_TIMES
+        value: "08:00,12:00,16:00"
+      - key: AUTO_POST_UTC_OFFSET_MINUTES
+        value: "420"
+      - key: AUTO_POST_CATCH_UP_MINUTES
+        value: "90"
+      - key: AUTO_POST_CHECK_INTERVAL_MS
+        value: "300000"
+      - key: AUTO_POST_SIGNATURE
+        value: "Nguồn tham khảo: Trung tâm trợ giúp Facebook/Meta. Nội dung do Page tự biên soạn, không đại diện Meta."
+      - key: COMMENT_AUTO_REPLY_ENABLED
+        value: "false"
+      - key: COMMENT_REPLY_TTL_DAYS
+        value: "14"
       - key: GEMINI_API_KEY
         sync: false
       - key: GROQ_API_KEY
@@ -67,4 +83,6 @@ services:
       - key: MEMORY_FILE_PATH
         sync: false
       - key: REPORT_FILE_PATH
+        sync: false
+      - key: AUTOMATION_FILE_PATH
         sync: false

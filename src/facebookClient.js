@@ -92,6 +92,54 @@ export class FacebookClient {
     });
   }
 
+  async publishPagePost(message) {
+    if (!this.pageAccessToken) {
+      throw new Error("PAGE_ACCESS_TOKEN is missing.");
+    }
+
+    if (!this.pageId) {
+      throw new Error("PAGE_ID is required for automatic Page posting.");
+    }
+
+    const response = await fetch(`${this.baseUrl}/${encodeURIComponent(this.pageId)}/feed`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        access_token: this.pageAccessToken,
+        message
+      })
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Facebook Page post failed: ${response.status} ${errorBody}`);
+    }
+
+    return response.json();
+  }
+
+  async replyToComment(commentId, message) {
+    if (!this.pageAccessToken) {
+      throw new Error("PAGE_ACCESS_TOKEN is missing.");
+    }
+
+    const response = await fetch(`${this.baseUrl}/${encodeURIComponent(commentId)}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        access_token: this.pageAccessToken,
+        message
+      })
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Facebook comment reply failed: ${response.status} ${errorBody}`);
+    }
+
+    return response.json();
+  }
+
   async callSendApi(payload) {
     if (!this.pageAccessToken) {
       throw new Error("PAGE_ACCESS_TOKEN is missing.");

@@ -16,6 +16,8 @@ Ban nay giu day du tinh nang v16 va them lop AI provider moi de co the dung Llam
 - Tro ly tao bao cao/khang nghi ban tu dong: hoi tung thong tin, soan san noi dung, gui link chinh thuc de nguoi dung tu bam gui.
 - Tao trang ban soan tren Render co nut copy noi dung va nut mo link chinh thuc cua Meta/Facebook.
 - Lenh `link ho tro` gui bo link chinh thuc theo nhom: bao mat, Account Quality, Business Support, Ads, ban quyen, trademark, privacy, creator.
+- Tu dong dang 3 bai/ngay ve Facebook/Meta neu bat `AUTO_POST_ENABLED=true`. Mac dinh 08:00, 12:00, 16:00 theo gio Viet Nam.
+- Tu dong rep binh luan Page neu bat `COMMENT_AUTO_REPLY_ENABLED=true` va Meta app da co quyen/webhook phu hop.
 - Tu cai menu co dinh trong Messenger: Hoi AI, Tao bao cao, Tro giup.
 - Giong tra loi lich su: bot xung em va goi nguoi can ho tro la Anh/Chi.
 - Bo nho hoi thoai theo PSID trong `data/memory.json`.
@@ -45,6 +47,10 @@ Dien cac bien trong `.env`:
 - `PUBLIC_BASE_URL`: URL HTTPS cong khai tro vao server, vi du URL ngrok.
 - `REPORT_FILE_PATH`: tuy chon, noi luu cac ban soan bao cao tam thoi. De trong thi dung `data/reports.json`.
 - `SETUP_MESSENGER_PROFILE_ON_START`: de `true` de bot tu cai nut menu co dinh Messenger khi deploy.
+- `AUTO_POST_ENABLED`: de `true` neu muon bot tu dang bai len Page.
+- `AUTO_POST_TIMES`: gio dang bai moi ngay, mac dinh `08:00,12:00,16:00`.
+- `COMMENT_AUTO_REPLY_ENABLED`: de `true` neu muon bot tu rep binh luan Page.
+- `AUTOMATION_FILE_PATH`: tuy chon, noi luu trang thai bai da dang va comment da rep.
 
 ## Chay local
 
@@ -86,6 +92,13 @@ Verify token trong Meta phai trung `VERIFY_TOKEN`.
 4. Trong Webhooks, nhap Callback URL va Verify Token.
 5. Subscribe toi thieu cac field `messages` va `messaging_postbacks`.
 6. Gui tin nhan vao Page de test. Khi app con development mode, chi admin/developer/tester cua app nhan phan hoi.
+
+Neu bat tu dong dang bai/rep binh luan, can them quyen va webhook phu hop trong Meta App:
+
+- Dang bai Page: `pages_manage_posts`.
+- Doc/quan ly tuong tac de rep binh luan: `pages_read_engagement`, `pages_manage_engagement`.
+- Nhan webhook binh luan Page: subscribe field `feed`.
+- Mot so app/page co the can app review truoc khi dung cho nguoi dung that.
 
 ## Lenh cho nguoi dung trong Messenger
 
@@ -148,6 +161,38 @@ AI provider selected: gemini
 ```
 
 Neu log hien `AI provider selected: openai` thi Render dang thieu `GEMINI_API_KEY` hoac chua deploy ban moi.
+
+## Tu dong dang bai va rep binh luan
+
+Mac dinh tinh nang nay dang tat de tranh dang ngoai y muon. Khi da cap quyen Meta xong, bat tren Render:
+
+```env
+AUTO_POST_ENABLED=true
+AUTO_POST_TIMES=08:00,12:00,16:00
+AUTO_POST_UTC_OFFSET_MINUTES=420
+AUTO_POST_CATCH_UP_MINUTES=90
+COMMENT_AUTO_REPLY_ENABLED=true
+```
+
+Co che:
+
+- Bot kiem tra lich moi 5 phut.
+- Moi ngay dang toi da 3 bai, moi khung gio chi dang 1 lan.
+- Chu de tu xoay vong: bao mat tai khoan, 2FA, Page, Messenger, quang cao, Account Quality, gia mao, phishing, ban quyen, privacy, business verification.
+- Moi bai co ghi chu nguon tham khao chinh sach:
+
+```text
+Nguồn tham khảo: Trung tâm trợ giúp Facebook/Meta. Nội dung do Page tự biên soạn, không đại diện Meta.
+```
+
+De han che rui ro ban quyen/chinh sach:
+
+- Chi dang noi dung tu viet, khong copy bai cua nguoi khac.
+- Khong dung logo, hinh anh, nhac, video cua ben thu ba neu chua co quyen.
+- Neu tham khao chinh sach Facebook/Meta, ghi la "nguon tham khao", khong copy nguyen van dai.
+- Khong hua mo khoa 100%, khong noi co quan he noi bo voi Meta/Facebook.
+- Khong dang noi dung spam, cau view gay hieu nham, bypass chinh sach hoac huong dan hack.
+- Khong yeu cau nguoi doc gui mat khau, ma 2FA, token, cookie hoac giay to nhay cam trong binh luan.
 
 ## Tuy chon Llama / Meta-style AI
 
